@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+SIGMA = 0.1
 def generate_data(n, p, s):
     # input: 
     # n - dimension of samples
@@ -18,7 +19,7 @@ def generate_data(n, p, s):
     x = 1. * np.ones((p,1))
     x[s:] = 0
     x = np.random.permutation(x)
-    y = np.dot(H, x) + np.random.normal(0, 0.1, size=(n, 1))
+    y = np.dot(H, x) + np.random.normal(0, SIGMA, size=(n, 1))
     return (x, y, H)
 
 def get_objective(y, H, x, lambda_para):
@@ -28,24 +29,30 @@ def get_objective(y, H, x, lambda_para):
 def hard_threshold_algo(y,H,lambda_para,alpha,N):
     x = np.zeros((len(H[0]), 1))
     objective_funcs = [0] * N
+    p = len(H[0])
+    n = len(H)
+    print("n, p", n, p)
     for i in range(N):
         # stopping criteria
-        if np.linalg.norm(y - np.dot(H, x), 2) < 1e-5 * np.count_nonzero(x):
-            break
+        #if np.linalg.norm(y - np.dot(H, x), 2) < 1e-5 * np.count_nonzero(x):
+         #   break
         # hard(x + 1/alpha/n H.T(y-Hx), lambda)
-        x = x + np.dot(np.transpose(H), y - np.dot(H, x)) / alpha / len(y)
+        x = x + np.dot(np.transpose(H), y - np.dot(H, x)) / alpha
         x[np.abs(x) <= lambda_para] = 0
         objective_funcs[i] = get_objective(y, H, x, lambda_para)
-        lambda_para /= 2
+        lambda_para = np.maximum(lambda_para/1.5,  2 * math.sqrt(np.log(p)/alpha))
+        print("lambda", lambda_para)
         print("in iteration", i, "; max x:", np.max(x))
+        print("in iteration", i, "; # nonzero x:", np.count_nonzero(x))
     return (x, objective_funcs)
 
 if(__name__ == "__main__"):
     x_original, y, H = generate_data(100, 1000, 20)
     print("x original", np.max(x_original))
-    alpha = 2. * math.ceil(max(np.linalg.eigh(np.dot(H.T, H))[0])) / len(y)
+    #alpha = 2. * math.ceil(max(np.linalg.eigh(np.dot(H.T, H))[0]))
+    alpha = 100 * 4
     print("alpha = ", alpha)
-    N = 200
+    N = 50
     # tuning lambda
     lambda_para = 20
     x, objective_funcs = hard_threshold_algo(y,H, lambda_para,alpha,N)

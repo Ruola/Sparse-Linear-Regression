@@ -38,5 +38,5 @@ class CrossValidation:
             if val_error < smallest_val_error:
                 smallest_val_error = val_error
                 best_para = para
-        print("smallest_val_error", smallest_val_error)
+        # print("smallest_val_error", smallest_val_error)
         return best_para

@@ -19,6 +19,6 @@ class GenerateData:
         x = x_value * np.ones((p,1))
         #x[:p-s] = 0
         x[s:] = 0
-        #x = np.random.permutation(x)
+        x = np.random.permutation(x)
         y = np.dot(H, x) + np.random.normal(self.mu, sigma, size=(n, 1))
         return (x, y, H)

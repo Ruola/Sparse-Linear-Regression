@@ -6,7 +6,7 @@ class GenerateData:
         # mu - the expectation of gaussian
         # sigma - the std of gaussian
         self.mu = 0
-        self.sigma = 0.1 # default
+
 
     def generate_data(self, n, p, s, sigma, SIGMA_half, x_value):
         # input: 

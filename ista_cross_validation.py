@@ -73,11 +73,9 @@ class Ista:
         gd_step_size = 1 / 2 / math.ceil(max(
             np.linalg.eigh(np.dot(H.T, H))[0]))
         # tuning lambda - cross validation
-        objective_f = Error().get_objective
         algo_f = lambda _y, _H, _para: self.get_estimation_by_ista(
             _y, _H, _para, gd_step_size, N)
-        cv_obj = cv(objective_f,
-                    algo_f,
+        cv_obj = cv(algo_f,
                     y,
                     H,
                     lambda_min=0.001,

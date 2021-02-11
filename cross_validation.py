@@ -1,16 +1,23 @@
 import math
 import numpy as np
+from typing import Callable
 
 
 class CrossValidation:
-    # input: function, k (k-fold cv), y (n*1), H (n*p matrix), lambda tuning range.
-    # inputs of objective_f should be x, y_val, H_val, para. Output a number.
-    # inputs of algo_f should be y_val, H_val, para. output x.
-    # output: best parameter
-    def __init__(self, objective_f, algo_f, y, H, lambda_min, lambda_max,
-                 params_count, k: int):
+    """k fold cross validation. Used by ista_cross_validation.py
+    """
+    def __init__(self, algo_f: Callable, y, H, lambda_min: float,
+                 lambda_max: float, params_count: int, k: int):
+        """
+        @param algo_f is a callable param and return the signal estimation \hat{x}. 
+        @param y - response/observation
+        @param H - design matrix
+        @param lambda_min - minimum of threshold/lambda chosen.
+        @param lambda_max - maximum of threshold/lambda chosen.
+        @param params_count - number of thresholds chosen.
+        @param k - (k-fold cross validation) split the dataset into k folds and choose one as a validation set
+        """
         self.k = k
-        self.objective_f = objective_f
         self.algo_f = algo_f  # To compute x
         self.y = y
         self.H = H
@@ -20,11 +27,17 @@ class CrossValidation:
         self.n = len(self.H)
 
     def get_vali_error(self, x, y_val, H_val, para):
+        """Get the validation error.
+        """
         # 1/n/2*(norm2(y-H_val*x)^2 + lambda*norm1(x))
         y_pred = np.dot(H_val, x)
         return np.linalg.norm(y_val - y_pred, 2)**2 / len(y_val) / 2.
 
     def tune_para(self):
+        """Get the best threshold/lambda by k fold cross validation.
+        
+        @return the best threshold.
+        """
         smallest_val_error = 1000000
         best_para = None
         for para in np.linspace(self.lambda_min, self.lambda_max,

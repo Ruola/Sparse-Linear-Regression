@@ -108,7 +108,7 @@ class Foba:
 if __name__ == "__main__":
     n, p, s = 100, 100, 20
     sigma = 0.1
-    x_original, y, H = GenerateData().generate_data(n, p, s, sigma, 1.) # n = 100, p = 1000
+    x_original, y, H = GenerateData().generate_data(n, p, s, sigma,SIGMA_half, 1.) # n = 100, p = 1000
     print("x original", np.max(x_original))
     print("n:", n)
     print("p:", p)

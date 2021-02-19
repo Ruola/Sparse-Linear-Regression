@@ -9,7 +9,7 @@ class CrossValidation:
     def __init__(self, algo_f: Callable, y, H, lambda_min: float,
                  lambda_max: float, params_count: int, k: int):
         """
-        @param algo_f is a callable param and return the signal estimation \hat{x}. 
+        @param algo_f - estimate the signal. Inputs are response(y), design(H), tuned parameter(threshold). 
         @param y - response/observation
         @param H - design matrix
         @param lambda_min - minimum of threshold/lambda chosen.
@@ -18,7 +18,7 @@ class CrossValidation:
         @param k - (k-fold cross validation) split the dataset into k folds and choose one as a validation set
         """
         self.k = k
-        self.algo_f = algo_f  # To compute x
+        self.algo_f = algo_f  # 
         self.y = y
         self.H = H
         self.lambda_min = lambda_min

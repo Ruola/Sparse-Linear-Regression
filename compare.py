@@ -17,14 +17,14 @@ class Compare:
     """
     def __init__(self, design="anisotropic"):
         """Set the type of design matrix, e.g. isotropic or anisotropic.
+
+        @param design - the type of design matrix, e.g. isotropic or anisotropic.
         """
         self.design = design
         self.steps = constants.STEPS  # number of experiments
-        self.N = constants.N_ITERATION  # number of iterations in ISTA or Hard Threshold
-        self.n, self.p, self.s = constants.N, constants.P, constants.S
-        self.x_value = constants.X_VALUE
+        self.num_iter = constants.N_ITERATION  # number of iterations
+        self.x_original = constants.X
         self.SIGMA_half = constants.SIGMA_COVAR_MATRIX_HALF[design]  # half of design covariance
-        self.sigma = constants.SIGMA_NUMBER
 
     def draw_result(self, error_matrix, algo_name: str, error_name: str):
         """Draw the change of generalization error with respect to #iterations in ISTA and IHT.
@@ -49,27 +49,25 @@ class Compare:
         Value: a matrix - each row is an experiment and each column is an iteraton
         """
         ista_cv_name = "ISTA cv" # a key of gener_errors_matrix_map
-        gener_errors_matrix_map[ista_cv_name] = np.zeros((self.steps, self.N))
+        gener_errors_matrix_map[ista_cv_name] = np.zeros((self.steps, self.num_iter))
 
         # Set initial value of gener_errors_matrix_map
         for gd_type in gd_types:
             for thres_type in thres_types:
-                gener_errors_matrix_map[gd_type+thres_type] = np.zeros((self.steps, self.N))
+                gener_errors_matrix_map[gd_type+thres_type] = np.zeros((self.steps, self.num_iter))
 
         for i in range(self.steps):
-            x_original, y, H = GenerateData().generate_data(
-                self.n, self.p, self.s, self.sigma, self.SIGMA_half,
-                self.x_value)
+            y, H = GenerateData(self.design).generate_data()
             # ISTA and lambda/threshold is selected by cross validation
             _, _, _, gener_error_ista = Ista(
-                ).get_errors_by_ista_cv(x_original, y, H, self.N, self.SIGMA_half)
+                ).get_errors_by_ista_cv(self.x_original, y, H, self.num_iter, self.SIGMA_half)
             gener_errors_matrix_ista = gener_errors_matrix_map[ista_cv_name]
             gener_errors_matrix_ista[i] = gener_error_ista
             for gd_type in gd_types:
                 for thres_type in thres_types:
                     gener_errors_matrix = gener_errors_matrix_map[gd_type+thres_type]
                     _, _, _, gener_error = GradientDescent(
-                    ).solve_spare_linear_regression(x_original, y, H, self.N,
+                    ).solve_spare_linear_regression(self.x_original, y, H, self.num_iter,
                                                     self.SIGMA_half, 1.5, gd_type,
                                                     thres_type)
                     gener_errors_matrix[i] = gener_error
@@ -90,4 +88,4 @@ if __name__ == "__main__":
     """Run the simulation.
     """
     Compare("isotropic").compare_gradient_descent()
-    Compare("anisotropic").compare_gradient_descent()
+    #Compare("anisotropic").compare_gradient_descent()

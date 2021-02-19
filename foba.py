@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import constants
+from error import Error
 from generate_data import GenerateData
 
 class Foba:
@@ -106,9 +108,11 @@ class Foba:
         return objective_record
 
 if __name__ == "__main__":
-    n, p, s = 100, 100, 20
-    sigma = 0.1
-    x_original, y, H = GenerateData().generate_data(n, p, s, sigma,SIGMA_half, 1.) # n = 100, p = 1000
+    design = "anisotropic"
+    n, p, s = constants.N, constants.P, constants.S
+    sigma = constants.SIGMA_NUMBER
+    x_original = constants.X
+    y, H = GenerateData(design).generate_data()
     print("x original", np.max(x_original))
     print("n:", n)
     print("p:", p)

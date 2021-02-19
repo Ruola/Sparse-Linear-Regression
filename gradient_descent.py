@@ -6,14 +6,13 @@ import numpy as np
 import os
 from scipy.linalg import pinvh
 
-from generate_data import GenerateData
 from error import Error
 
 
 class GradientDescent:
     """Use gradient descent (gd), natural gd or newton method with IHT/HTP to solve sparse linear regression.
     """
-    def solve_spare_linear_regression(self, x_original, y, H, N, SIGMA_half,
+    def solve_spare_linear_regression(self, x_original, y, H, num_iter, SIGMA_half,
                                       threshold: float, gd_type: str,
                                       iter_type: str):
         """Use gradient descent (gd), natural gd or newton method with IHT/HTP to solve sparse linear regression.
@@ -21,7 +20,7 @@ class GradientDescent:
         @param x_original - in order to compute error,  we need the original/true signal.
         @param y - the observations/response
         @param H - the design matrix
-        @param N - the number of iterations
+        @param num_iter - the number of iterations
         @param SIGMA_half - half of the covariance of design matrix
         @param threshold - the initial value of threshold and the default value is 200. If use cross validation, we do not need this param and can set it to be a dummy one.
         @param gd_type - includes gradient descent (gd), natural gd (ngd), newton method (newton)
@@ -34,10 +33,10 @@ class GradientDescent:
         x = np.zeros((len(H[0]), 1))  # initial value of estimation
         pred_errors = [
             0
-        ] * N  # record prediction errors of estimation in each iteration
+        ] * num_iter  # record prediction errors of estimation in each iteration
         gener_errors = [
             0
-        ] * N  # record generalization errors of estimation in each iteration
+        ] * num_iter  # record generalization errors of estimation in each iteration
         inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
         #inv_sigma = pinvh(np.cov(H.T))
         # Define step size of gradient descent step.
@@ -49,7 +48,7 @@ class GradientDescent:
         else:  # newton
             step_size = 1 / 2
 
-        for i in range(N):
+        for i in range(num_iter):
             # Gradient descent step: gd, ngd, newton.
             # x <- x + alpha * M * H'(y-Hx)
             if gd_type == "gd":

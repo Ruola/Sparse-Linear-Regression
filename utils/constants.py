@@ -12,16 +12,19 @@ import numpy as np
 @param X_VALUE - value of elements of true signal
 @param X - true signal
 """
+ISOTROPIC_NAME = "isotropic"
+ANISOTROPIC_NAME = "anisotropic"
+
 STEPS = 20  # number of experiments
 N_ITERATION = 200  # number of iterations in ISTA or Hard Threshold
 N, P, S = 200, 1000, 10
 # covariance of design matrix
 temp = np.ones((P))
-SIGMA_COVAR_MATRIX_HALF = {"isotropic": np.diag(temp)}
+SIGMA_COVAR_MATRIX_HALF = {ISOTROPIC_NAME: np.diag(temp)}
 temp[P // 2:] = 10
 #temp[:p // 2] = 10
 temp = np.random.permutation(temp)
-SIGMA_COVAR_MATRIX_HALF["anisotropic"] = np.diag(temp)  # half of design covariance
+SIGMA_COVAR_MATRIX_HALF[ANISOTROPIC_NAME] = np.diag(temp)  # half of design covariance
 # noise
 MU = 0
 SIGMA_NUMBER = .1
@@ -31,3 +34,6 @@ X = X_VALUE * np.ones((P,1))
 #x[:p-s] = 0
 X[S:] = 0
 X = np.random.permutation(X)
+
+ISTA_NAME = "ISTA"
+IHT_NAME = "AdaIHT"

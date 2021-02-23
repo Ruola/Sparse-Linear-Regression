@@ -6,7 +6,7 @@ import numpy as np
 import os
 from scipy.linalg import pinvh
 
-from error import Error
+from utils.error import Error
 
 
 class GradientDescent:

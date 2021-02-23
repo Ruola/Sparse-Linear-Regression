@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from error import Error
-from generate_data import GenerateData
-import constants
-from ista_cross_validation import Ista
-from gradient_descent import GradientDescent
+from algorithms.gradient_descent import GradientDescent
+from algorithms.iterative_threshold_methods import IterativeThresholdMethods
+import utils.constants as constants
+from utils.error import Error
+from utils.generate_data import GenerateData
 
 
 class Compare:
@@ -59,8 +59,8 @@ class Compare:
         for i in range(self.steps):
             y, H = GenerateData(self.design).generate_data()
             # ISTA and lambda/threshold is selected by cross validation
-            _, _, _, gener_error_ista = Ista(
-                ).get_errors_by_ista_cv(self.x_original, y, H, self.num_iter, self.SIGMA_half)
+            _, _, gener_error_ista = IterativeThresholdMethods(
+                ).get_errors_by_cv(self.x_original, y, H, self.num_iter, self.SIGMA_half, constants.ISTA_NAME)
             gener_errors_matrix_ista = gener_errors_matrix_map[ista_cv_name]
             gener_errors_matrix_ista[i] = gener_error_ista
             for gd_type in gd_types:

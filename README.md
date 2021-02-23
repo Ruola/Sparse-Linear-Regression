@@ -13,6 +13,6 @@
 
 ### Simulations
 - To compare the convergence speed of ISTA and IHT, get the change of generalization error with respect to #iterations in ISTA and IHT.
-  - `python3 iterative_threshold_method.py`
+  - `python3 compare_iterative_threshold_methods.py`
 - To compare gradient descent methods (gd, ngd, newton) with IHT / HTP.
-  - `python3 compare.py`
+  - `python3 compare_gradient_descent.py`

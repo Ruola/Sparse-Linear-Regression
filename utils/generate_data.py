@@ -1,6 +1,6 @@
 import numpy as np
 
-import constants
+import utils.constants as constants
 
 
 class GenerateData:

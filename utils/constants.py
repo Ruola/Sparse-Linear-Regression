@@ -15,8 +15,8 @@ import numpy as np
 ISOTROPIC_NAME = "isotropic"
 ANISOTROPIC_NAME = "anisotropic"
 
-STEPS = 2  # number of experiments
-N_ITERATION = 200  # number of iterations in ISTA or Hard Threshold
+STEPS = 20  # number of experiments
+N_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 N, P, S = 200, 1000, 10
 # covariance of design matrix
 temp = np.ones((P))

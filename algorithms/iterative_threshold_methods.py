@@ -11,14 +11,14 @@ class IterativeThresholdMethods:
     """Implement iterative threshold algorithms (ISTA, AdaIHT) to solve sparse linear regression.
     """
     def run_soft_func(self, x, y, H, lambda_para, alpha):
-        """Run soft threshold function.
+        """Run soft threshold function and update estimation in an iteration.
         
         soft_threshold_function(x + alpha * H.T(y-Hx), lambda)
-        @return x - recovered signal
         @param y - observed signal
         @param H - design matrix
         @param lambda_para - threshold
         @param alpha - the step size of gradient descent, alpha <= 1 / max eigen (H'H) 
+        @return x - updated estimation
         """
         temp = x + alpha * np.dot(np.transpose(H), y - np.dot(H, x))
         x = temp - lambda_para * np.sign(temp)
@@ -26,14 +26,14 @@ class IterativeThresholdMethods:
         return x
 
     def run_hard_func(self, x, y, H, lambda_step, alpha):
-        """Run soft threshold function.
+        """Run soft threshold function and update estimation in an iteration.
         
         hard_threshold_function(x + alpha * H.T(y-Hx), lambda)
-        @return x - recovered signal
         @param y - observed signal
         @param H - design matrix
         @param lambda_step - threshold updated in each iteration.
         @param alpha - the step size of gradient descent, alpha <= 1 / max eigen (H'H) 
+        @return x - updated estimation
         """
         # hard_threshold_function(x + alpha * H.T(y-Hx), lambda)
         x = x + alpha * np.dot(np.transpose(H), y - np.dot(H, x))
@@ -46,8 +46,7 @@ class IterativeThresholdMethods:
                        lambda_para,
                        alpha,
                        num_iter,
-                       iterative_method_type,
-                       final_para_needed=False):
+                       iterative_method_type):
         """Recover the signal using ISTA or AdaIHT.
 
         @param y - observed signal
@@ -56,7 +55,6 @@ class IterativeThresholdMethods:
         @param alpha - the step size of gradient descent, alpha <= 1 / max eigen (H'H) 
         @param num_iter - max number of iterations
         @param iterative_method_type - "ISTA" or "AdaIHT"
-        @param final_para_needed - If it is true, return final threshold.
         @return x - recovered signal
         """
         if iterative_method_type == constants.IHT_NAME:
@@ -72,8 +70,6 @@ class IterativeThresholdMethods:
                     lambda_step = lambda_para
             else:  #ISTA
                 x = self.run_soft_func(x, y, H, lambda_step, alpha)
-        if final_para_needed:
-            return x, lambda_step
         return x
 
     def get_errors(self, y, H, lambda_para, alpha, N_iter, SIGMA_half, x_true,
@@ -117,7 +113,7 @@ class IterativeThresholdMethods:
                          SIGMA_half,
                          iterative_method_type,
                          validation_errors_needed=False):
-        """Get the estimation result and errors in each iteration by ISTA and cross validation.
+        """Get the estimation result and errors in each iteration by ISTA/AdaIHT and cross validation.
 
         @param x_original - true signal
         @param y - observed signal
@@ -139,8 +135,7 @@ class IterativeThresholdMethods:
             _para,
             gd_step_size,
             N_iter,
-            iterative_method_type,
-            final_para_needed=True)
+            iterative_method_type)
         cv_obj = cv(algo_f,
                     y,
                     H,

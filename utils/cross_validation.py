@@ -11,7 +11,7 @@ class CrossValidation:
         """
         @param algo_f - estimate the signal. 
             Inputs are response(y), design(H), tuned parameter(threshold). 
-            Outputs are the estimation and parameter/threshold(final).
+            Output the estimation.
         @param y - response/observation
         @param H - design matrix
         @param lambda_min - minimum of threshold/lambda chosen.
@@ -64,17 +64,13 @@ class CrossValidation:
                     (self.H[:math.floor(i * self.n / self.k)],
                      self.H[math.floor((i + 1) * self.n / self.k):]),
                     axis=0)
-                x, thres = self.algo_f(y_train, H_train, para)
-                # thres is different from para. 
-                # thres is the final parameter among iterations.
-                # In ISTA, they are equal because ISTA never update threshold.
-                # But in AdaIHT, thres usually does not equal to para.
+                x = self.algo_f(y_train, H_train, para)
                 val_error += self.get_vali_error(x, y_val, H_val, para)
             val_error /= self.k
             if val_error < smallest_val_error:
                 smallest_val_error = val_error
                 best_para = para
-            map_para_error[thres] = val_error
+            map_para_error[para] = val_error
         if errors_needed:
             return best_para, map_para_error
         return best_para

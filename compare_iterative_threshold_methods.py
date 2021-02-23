@@ -56,7 +56,7 @@ def compare_validation_error(design):
     """
     obj = CompareIterativeThresholdMethods(design)
     for algo_name in (constants.IHT_NAME, constants.ISTA_NAME):
-        _, best_thres_ista, gener_errors_ista, map_of_thres_error_ista = IterativeThresholdMethods(
+        _, best_thres, gener_errors, map_of_thres_error = IterativeThresholdMethods(
         ).get_errors_by_cv(obj.x_original,
                            obj.y,
                            obj.H,
@@ -64,11 +64,11 @@ def compare_validation_error(design):
                            obj.SIGMA_half,
                            algo_name,
                            validation_errors_needed=True)
-        obj.draw_change_of_error_by_threshold(map_of_thres_error_ista,
+        obj.draw_change_of_error_by_threshold(map_of_thres_error,
                                               algo_name)
     plt.savefig(
         os.path.dirname(os.path.abspath(__file__)) +
-        "/figures/ista iht/AdaIHT error by threshold " + obj.design)
+        "/figures/ista iht/error by threshold " + obj.design)
     plt.clf()
 
 
@@ -96,13 +96,13 @@ def compare_convergence_rate(design):
             gener_errors_matrix = gener_errors_matrices_map[algo_name]
             gener_errors_matrix[i] = gener_errors
             gener_errors_matrices_map[algo_name] = gener_errors_matrix
-
+    # To draw the change of error w.r.t the #iteration.
     for algo_name in (constants.IHT_NAME, constants.ISTA_NAME):
         gener_errors = np.mean(gener_errors_matrices_map[algo_name], axis=0)
         plt.plot(gener_errors, label=algo_name)
     plt.xlabel("#iterations")
     plt.ylabel("generalization error")
-    plt.title("Compare convergence rate of ISTA and IHT" + design)
+    plt.title("Compare convergence rate of ISTA and IHT " + design)
     plt.legend()
     plt.savefig(
         os.path.dirname(os.path.abspath(__file__)) +
@@ -112,6 +112,6 @@ def compare_convergence_rate(design):
 
 if __name__ == "__main__":
     # Change this into "isotropic" or "anisotropic" in order to try different type of design matrix.
-    design = "isotropic"
-    #compare_validation_error(design)
+    design = constants.ISOTROPIC_NAME
+    compare_validation_error(design)
     compare_convergence_rate(design)

@@ -57,15 +57,15 @@ class IterativeThresholdMethods:
         @param iterative_method_type - "ISTA" or "AdaIHT"
         @return x - recovered signal
         """
+        x = np.zeros((len(H[0]), 1))
         if iterative_method_type == constants.IHT_NAME:
-            lambda_step = np.max(y)
+            lambda_step = np.max(alpha * np.dot(np.transpose(H), y - np.dot(H, x)))
         else:  #ISTA
             lambda_step = lambda_para
-        x = np.zeros((len(H[0]), 1))
         for _ in range(num_iter):
             if iterative_method_type == constants.IHT_NAME:
                 x = self.run_hard_func(x, y, H, lambda_step, alpha)
-                lambda_step /= 1.5  # update threshold
+                lambda_step *= 0.95  # update threshold
                 if lambda_step < lambda_para:
                     lambda_step = lambda_para
             else:  #ISTA
@@ -88,16 +88,16 @@ class IterativeThresholdMethods:
             gener_errors- record errors of estimations of each iterations, 
             and the details of definition of the error are in Error class.
         """
+        x = np.zeros((len(H[0]), 1))
         if iterative_method_type == constants.IHT_NAME:
-            lambda_step = np.max(y)
+            lambda_step = np.max(alpha * np.dot(np.transpose(H), y - np.dot(H, x)))
         else:  #ISTA
             lambda_step = lambda_para
-        x = np.zeros((len(H[0]), 1))
         gener_errors = [0] * N_iter
         for i in range(N_iter):
             if iterative_method_type == constants.IHT_NAME:
                 x = self.run_hard_func(x, y, H, lambda_step, alpha)
-                lambda_step /= 1.5  # update threshold
+                lambda_step *= 0.95  # update threshold
                 if lambda_step < lambda_para:
                     lambda_step = lambda_para
             else:  #ISTA

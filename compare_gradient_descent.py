@@ -77,7 +77,7 @@ class Compare:
         plt.ylabel("generalization error")
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/second order methods comparison in " + self.design + " design")
+            "/figures/second order methods/comparison in " + self.design + " design")
         plt.clf()
 
 

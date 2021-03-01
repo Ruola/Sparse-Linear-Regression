@@ -137,7 +137,7 @@ class GradientDescent:
         @return x - estimation \hat{x};
                 gener_errors - generalization errors of estimation in each iteration.
         """
-        inv_sigma = inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
+        inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
         gd_step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
         # tuning lambda - cross validation
         algo_f = lambda _y, _H, _para: self.get_estimation(x_original,
@@ -152,8 +152,8 @@ class GradientDescent:
         cv_obj = cv(algo_f,
                     y,
                     H,
-                    lambda_min=0.0005,
-                    lambda_max=0.05,
+                    lambda_min=0.001,
+                    lambda_max=0.1,
                     params_count=10,
                     k=3)
         if not validation_errors_needed:

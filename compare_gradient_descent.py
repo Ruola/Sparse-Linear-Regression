@@ -38,6 +38,43 @@ class Compare:
         plt.ylabel("error")
         plt.title(algo_name + " " + self.design)
 
+    def draw_change_of_error_by_threshold(self, map_of_thres_error, type: str):
+        """Get the change of testing error w.r.t. the threshold in ISTA and AdaIHT.
+
+        @param map_of_thres_error: keys are thresholds and values are errors.
+        @param type: "ISTA" or "AdaIHT"
+        """
+        thresholds, errors = zip(*sorted(map_of_thres_error.items()))
+        best_thres = min(map_of_thres_error, key=map_of_thres_error.get)
+        plt.plot(thresholds,
+                 errors,
+                 label=type + " threshold " + str(best_thres))
+        # find best threshold
+        plt.scatter(best_thres,
+                    map_of_thres_error[best_thres])  # draw the lowest point
+        plt.xlabel("(final) threshold")
+        plt.ylabel("validation error from cv")
+        plt.legend()
+
+    def compare_validation_error(self, gd_types, thres_types):
+        """Get the change of testing error w.r.t. (final) threshold in one experiment.
+        
+        @param design: "isotropic" or "anisotropic".
+        """
+        y, H = GenerateData(self.design).generate_data()
+        for gd_type in gd_types:
+            for thres_type in thres_types:
+                _, best_lambda, gener_error, map_of_thres_error = GradientDescent(
+                        ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                                        self.SIGMA_half, gd_type, thres_type,
+                                        True)
+                self.draw_change_of_error_by_threshold(map_of_thres_error,
+                                                    gd_type + " + " + thres_type)
+        plt.savefig(
+            os.path.dirname(os.path.abspath(__file__)) +
+            "/figures/second order methods/error by threshold " + self.design)
+        plt.clf()
+
     def compare_gradient_descent(self, gd_types, thres_types):
         """Compare gradient descent, natural gd, newton with IHT / HTP.
         """
@@ -86,5 +123,11 @@ if __name__ == "__main__":
     """
     gd_types = (constants.GD_NAME, constants.NGD_NAME, constants.NEWTON_NAME)
     thres_types = (constants.IHT_NAME, )
+    """Draw the change of testing error w.r.t. (final) threshold.
+    """
+    Compare(constants.ISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
+    Compare(constants.ANISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
+    """Draw the change of generalization error w.r.t. iterations.
+    """
     Compare(constants.ISOTROPIC_NAME).compare_gradient_descent(gd_types, thres_types)
     Compare(constants.ANISOTROPIC_NAME).compare_gradient_descent(gd_types, thres_types)

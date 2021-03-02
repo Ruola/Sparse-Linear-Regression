@@ -77,7 +77,8 @@ class GradientDescent:
         gener_errors = [
             0
         ] * num_iter  # record generalization errors of estimation in each iteration
-        inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
+        #inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
+        inv_sigma = np.diag(1. / (np.diag(SIGMA_half) ** 2))
         # Define step size of gradient descent step.
         step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
         lambda_step = np.max(
@@ -137,7 +138,8 @@ class GradientDescent:
         @return x - estimation \hat{x};
                 gener_errors - generalization errors of estimation in each iteration.
         """
-        inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
+        #inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
+        inv_sigma = np.diag(1. / (np.diag(SIGMA_half) ** 2))
         gd_step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
         # tuning lambda - cross validation
         algo_f = lambda _y, _H, _para: self.get_estimation(x_original,

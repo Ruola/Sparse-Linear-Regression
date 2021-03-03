@@ -6,8 +6,7 @@ from typing import Callable, Dict
 class CrossValidation:
     """k fold cross validation. Used by ista_cross_validation.py
     """
-    def __init__(self, algo_f: Callable, y, H, lambda_min: float,
-                 lambda_max: float, params_count: int, k: int):
+    def __init__(self, algo_f: Callable, y, H, k: int):
         """
         @param algo_f - estimate the signal. 
             Inputs are response(y), design(H), tuned parameter(threshold). 
@@ -23,9 +22,6 @@ class CrossValidation:
         self.algo_f = algo_f  # 
         self.y = y
         self.H = H
-        self.lambda_min = lambda_min
-        self.lambda_max = lambda_max
-        self.params_count = params_count
         self.n = len(self.H)
 
     def get_vali_error(self, x, y_val, H_val, para):
@@ -46,8 +42,7 @@ class CrossValidation:
         best_para = None
         map_para_error: Dict[float, float] = dict()
         # map_para_error is a map with thres as keys and validation errors as values.
-        for para in np.linspace(self.lambda_min, self.lambda_max,
-                                self.params_count):
+        for para in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1., 5., 10.]:
             val_error = 0.
             for i in range(self.k):
                 y_val = self.y[math.floor(i * self.n /

@@ -139,9 +139,6 @@ class IterativeThresholdMethods:
         cv_obj = cv(algo_f,
                     y,
                     H,
-                    lambda_min=0.001,
-                    lambda_max=0.1,
-                    params_count=100,
                     k=5)
         if not validation_errors_needed:
             best_lambda = cv_obj.tune_para(

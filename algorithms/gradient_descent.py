@@ -78,7 +78,7 @@ class GradientDescent:
             0
         ] * num_iter  # record generalization errors of estimation in each iteration
         #inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
-        inv_sigma = np.diag(1. / (np.diag(SIGMA_half) ** 2))
+        inv_sigma = np.diag(1. / (np.diag(SIGMA_half)**2))
         # Define step size of gradient descent step.
         step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
         lambda_step = np.max(
@@ -92,12 +92,10 @@ class GradientDescent:
             if iter_type == constants.IHT_NAME:  # iterative hard threshold
                 x[np.abs(x) < lambda_step] = 0
             else:  # HTP: hard threshold pursuit
-                indices_removed = np.argwhere(
-                    np.abs(x) < lambda_step
-                )  # indices_removed is p * 2 dim, e.g. [[192, 1], [198, 1], [222, 1]]
+                """x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
+                """
                 indices_removed = np.ravel(
-                    np.delete(indices_removed, 1, 1)
-                )  # e.g. [[192, 1], [198, 1],[222, 1]] -> [[192], [198],[222]] -> [192, 198,222]
+                    np.delete(np.argwhere(np.abs(x) < lambda_step), 1, 1))
                 if len(indices_removed) > len(x):
                     # in case H'H is 0 * 0 dimension
                     H_sparse = np.delete(np.copy(H), indices_removed, 1)
@@ -139,7 +137,7 @@ class GradientDescent:
                 gener_errors - generalization errors of estimation in each iteration.
         """
         #inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
-        inv_sigma = np.diag(1. / (np.diag(SIGMA_half) ** 2))
+        inv_sigma = np.diag(1. / (np.diag(SIGMA_half)**2))
         gd_step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
         # tuning lambda - cross validation
         algo_f = lambda _y, _H, _para: self.get_estimation(x_original,
@@ -151,10 +149,7 @@ class GradientDescent:
                                                            iter_type,
                                                            _para,
                                                            errors_needed=False)
-        cv_obj = cv(algo_f,
-                    y,
-                    H,
-                    k=3)
+        cv_obj = cv(algo_f, y, H, k=3)
         if not validation_errors_needed:
             best_lambda = cv_obj.tune_para(
                 errors_needed=validation_errors_needed)  # the best threshold

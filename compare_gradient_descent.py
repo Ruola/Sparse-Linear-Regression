@@ -90,7 +90,7 @@ class Compare:
                     (self.steps, self.num_iter))
 
         for i in range(self.steps):
-            y, H = GenerateData(self.design).generate_data()
+            y, H, self.SIGMA_half = GenerateData(self.design).generate_data()
             for gd_type in gd_types:
                 for thres_type in thres_types:
                     gener_errors_matrix = gener_errors_matrix_map[gd_type +

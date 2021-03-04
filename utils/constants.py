@@ -20,13 +20,6 @@ N_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 GD_STEPS = 10  # number of experiments in compare_gradient_descent
 GD_NUM_ITERATION = 200  # number of iterations in ISTA or Hard Threshold
 N, P, S = 200, 1000, 10
-# covariance of design matrix
-temp = np.ones((P))
-SIGMA_COVAR_MATRIX_HALF = {ISOTROPIC_NAME: np.diag(temp)}
-temp[P // 2:] = 10
-#temp[:p // 2] = 10
-temp = np.random.permutation(temp)
-SIGMA_COVAR_MATRIX_HALF[ANISOTROPIC_NAME] = np.diag(temp)  # half of design covariance
 # noise
 MU = 0
 SIGMA_NUMBER = .1

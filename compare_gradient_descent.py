@@ -15,7 +15,7 @@ from utils.generate_data import GenerateData
 class Compare:
     """Do a simulation to compare gradient descent methods with IHT / HTP.
     """
-    def __init__(self, design="anisotropic"):
+    def __init__(self, design=constants.ANISOTROPIC_NAME):
         """Set the type of design matrix, e.g. isotropic or anisotropic.
 
         @param design - the type of design matrix, e.g. isotropic or anisotropic.
@@ -24,8 +24,6 @@ class Compare:
         self.steps = constants.GD_STEPS  # number of experiments
         self.num_iter = constants.GD_NUM_ITERATION  # number of iterations
         self.x_original = constants.X
-        self.SIGMA_half = constants.SIGMA_COVAR_MATRIX_HALF[
-            design]  # half of design covariance
 
     def draw_result(self, error_matrix, algo_name: str, error_name: str):
         """Draw the change of generalization error with respect to #iterations in ISTA and IHT.
@@ -61,7 +59,7 @@ class Compare:
         
         @param design: "isotropic" or "anisotropic".
         """
-        y, H = GenerateData(self.design).generate_data()
+        y, H, self.SIGMA_half = GenerateData(self.design).generate_data()
         for gd_type in gd_types:
             for thres_type in thres_types:
                 _, best_lambda, gener_error, map_of_thres_error = GradientDescent(

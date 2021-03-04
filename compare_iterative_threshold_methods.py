@@ -14,7 +14,7 @@ from utils.generate_data import GenerateData
 class CompareIterativeThresholdMethods:
     """Do a simulation to compare ISTA and IHT.
     """
-    def __init__(self, design="anisotropic"):
+    def __init__(self, design=constants.ANISOTROPIC_NAME):
         """Initialization.
         
         @param design - "isotropic" or "anisotropic"
@@ -22,13 +22,11 @@ class CompareIterativeThresholdMethods:
         self.design = design
         self.num_iter = constants.N_ITERATION  # number of iterations
         self.x_original = constants.X
-        self.SIGMA_half = constants.SIGMA_COVAR_MATRIX_HALF[
-            design]  # half of design covariance
 
     def generate_data(self):
         """Generate one experiment data for sparse linear regression.
         """
-        self.y, self.H = GenerateData(self.design).generate_data()
+        self.y, self.H, self.SIGMA_half = GenerateData(self.design).generate_data()
         # gradient descent step size
         #self.step_size = 1/ 2. / math.ceil(max(np.linalg.eigh(np.dot(self.H.T, self.H))[0]))
         self.step_size = 1 / 2. / np.linalg.norm(

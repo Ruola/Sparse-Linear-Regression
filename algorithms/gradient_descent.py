@@ -49,6 +49,45 @@ class GradientDescent:
                 np.dot(pinvh(np.dot(np.transpose(H), H)), np.transpose(H)),
                 y - np.dot(H, x))
 
+    def _insert_zero(self, x, indices_removed):
+        """A function to add zero elements into x as the list of indices removed previously.
+        
+        @param x - signal estimation.
+        @param indices_removed - the list of indices removed previously.
+        @return the updated signal estimation.
+        """
+        for i in indices_removed:
+            x = np.insert(x, i, 0)
+        return x
+
+    def update_signal_estimation(self, x, y, H, lambda_step, iter_type):
+        """Get the estimation by IHT or HTP.
+        This step follows the gradient descent step. 
+        Update the estimation by pluging coordinates that are smaller than the threshold to zero.
+        
+        @param x - signal estimation.
+        @param y - the observations/response.
+        @param H - the design matrix.
+        @param lambda_step - the threshold.
+        @param iter_type - includes iterative hard threshold (IHT), hard threshold pursuit (HTP).
+        """
+        if iter_type == constants.IHT_NAME:  # iterative hard threshold
+            x[np.abs(x) < lambda_step] = 0
+        else:  # HTP: hard threshold pursuit
+            """x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
+            """
+            indices_removed = np.ravel(
+                np.delete(np.argwhere(np.abs(x) < lambda_step), 1, 1))
+            if len(indices_removed) != len(x):
+                # in case H'H is 0 * 0 dimension
+                H_sparse = np.delete(np.copy(H), indices_removed, 1)
+                x_temp = np.dot(
+                    pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
+                    np.dot(np.transpose(H_sparse), y))
+                x_temp = x_temp.reshape(-1)
+                x[:, 0] = self._insert_zero(x_temp, indices_removed)
+        return x
+
     def get_estimation(self,
                        x_original,
                        y,
@@ -77,7 +116,6 @@ class GradientDescent:
         gener_errors = [
             0
         ] * num_iter  # record generalization errors of estimation in each iteration
-        #inv_sigma = pinvh(np.dot(SIGMA_half, SIGMA_half))
         inv_sigma = np.diag(1. / (np.diag(SIGMA_half)**2))
         # Define step size of gradient descent step.
         step_size = self.get_gd_step_size(H, gd_type, inv_sigma)
@@ -89,21 +127,8 @@ class GradientDescent:
             # Gradient descent step: gd, ngd, newton.
             x = x + self.get_gradient_descent_step(x, y, H, gd_type, inv_sigma,
                                                    step_size)
-            if iter_type == constants.IHT_NAME:  # iterative hard threshold
-                x[np.abs(x) < lambda_step] = 0
-            else:  # HTP: hard threshold pursuit
-                """x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
-                """
-                indices_removed = np.ravel(
-                    np.delete(np.argwhere(np.abs(x) < lambda_step), 1, 1))
-                if len(indices_removed) > len(x):
-                    # in case H'H is 0 * 0 dimension
-                    H_sparse = np.delete(np.copy(H), indices_removed, 1)
-                    x_temp = np.dot(
-                        pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
-                        np.dot(np.transpose(H_sparse), y))
-                    x_temp = x_temp.reshape(-1)
-                    x[:, 0] = np.insert(x_temp, 0, indices_removed, 0)
+            # To update estimation by IHT or HTP.
+            x = self.update_signal_estimation(x, y, H, lambda_step, iter_type)
             if errors_needed:
                 gener_errors[i] = Error().get_gener_error(
                     x_original, x, SIGMA_half)

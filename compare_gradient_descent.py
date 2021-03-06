@@ -63,11 +63,10 @@ class Compare:
         for gd_type in gd_types:
             for thres_type in thres_types:
                 _, best_lambda, gener_error, map_of_thres_error = GradientDescent(
-                        ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
-                                        self.SIGMA_half, gd_type, thres_type,
-                                        True)
-                self.draw_change_of_error_by_threshold(map_of_thres_error,
-                                                    gd_type + " + " + thres_type)
+                ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                                   self.SIGMA_half, gd_type, thres_type, True)
+                self.draw_change_of_error_by_threshold(
+                    map_of_thres_error, gd_type + " + " + thres_type)
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
             "/figures/second order methods/error by threshold " + self.design)
@@ -107,25 +106,37 @@ class Compare:
             for thres_type in thres_types:
                 self.draw_result(gener_errors_matrix_map[gd_type + thres_type],
                                  gd_type + " " + thres_type, "")
-        plt.title("Second order methods comparison in " + self.design + " design")
+        plt.title("Second order methods comparison in " + self.design +
+                  " design")
         plt.xlabel("#iterations")
         plt.ylabel("generalization error")
-        plt.savefig(
-            os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/second order methods/comparison in " + self.design + " design")
+        if constants.HTP_NAME in thres_types:
+            plt.savefig(
+                os.path.dirname(os.path.abspath(__file__)) +
+                "/figures/second order methods/comparison in " + self.design +
+                " design HTP")
+        else:
+            plt.savefig(
+                os.path.dirname(os.path.abspath(__file__)) +
+                "/figures/second order methods/comparison in " + self.design +
+                " design")
         plt.clf()
 
 
 if __name__ == "__main__":
     """Run the simulation.
     """
+    # Change gd_types and thres_types according to the needs.
     gd_types = (constants.GD_NAME, constants.NGD_NAME, constants.NEWTON_NAME)
     thres_types = (constants.IHT_NAME, )
     """Draw the change of testing error w.r.t. (final) threshold.
+        Please comment these two lines out if you do not need it.
     """
-    Compare(constants.ISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
-    Compare(constants.ANISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
+    #Compare(constants.ISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
+    #Compare(constants.ANISOTROPIC_NAME).compare_validation_error(gd_types, thres_types)
     """Draw the change of generalization error w.r.t. iterations.
     """
-    Compare(constants.ISOTROPIC_NAME).compare_gradient_descent(gd_types, thres_types)
-    Compare(constants.ANISOTROPIC_NAME).compare_gradient_descent(gd_types, thres_types)
+    Compare(constants.ISOTROPIC_NAME).compare_gradient_descent(
+        gd_types, thres_types)
+    Compare(constants.ANISOTROPIC_NAME).compare_gradient_descent(
+        gd_types, thres_types)

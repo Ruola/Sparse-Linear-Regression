@@ -1,7 +1,7 @@
-import math
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import multiprocessing as mp
 import numpy as np
 import os
 
@@ -24,17 +24,6 @@ class Compare:
         self.steps = constants.GD_STEPS  # number of experiments
         self.num_iter = constants.GD_NUM_ITERATION  # number of iterations
         self.x_original = constants.X
-
-    def draw_result(self, error_matrix, algo_name: str, error_name: str):
-        """Draw the change of generalization error with respect to #iterations in ISTA and IHT.
-        """
-        result = np.mean(error_matrix, axis=0)
-        print(algo_name + " " + error_name)
-        plt.plot(result, label=algo_name + " " + error_name)
-        plt.legend()
-        plt.xlabel("#iterations")
-        plt.ylabel("error")
-        plt.title(algo_name + " " + self.design)
 
     def draw_change_of_error_by_threshold(self, map_of_thres_error, type: str):
         """Get the change of testing error w.r.t. the threshold in ISTA and AdaIHT.
@@ -72,6 +61,24 @@ class Compare:
             "/figures/second order methods/error by threshold " + self.design)
         plt.clf()
 
+    def run_one_experiment(self, dummy):
+        """Run one experient working for multiprocessing.
+        
+        @param dummy - a meaningless variable.
+        @return algo_name gener_error hashmap.
+        """
+        y, H, self.SIGMA_half = GenerateData(self.design).generate_data()
+        algo_error_map = dict()
+        for gd_type in self.gd_types:
+            for thres_type in self.thres_types:
+                algo_name = gd_type + "+" + thres_type
+                _, best_lambda, gener_error = GradientDescent(
+                ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                                   self.SIGMA_half, gd_type, thres_type, False)
+                algo_error_map[algo_name] = gener_error
+                print(gd_type, thres_type, best_lambda)
+        return algo_error_map
+
     def compare_gradient_descent(self, gd_types, thres_types):
         """Compare gradient descent, natural gd, newton with IHT / HTP.
         """
@@ -81,35 +88,31 @@ class Compare:
         Key: "gdIHT" / "ngdIHT" / "gdHTP" etc
         Value: a matrix - each row is an experiment and each column is an iteraton
         """
-
+        algo_gener_errors_map = dict()
         # Set initial value of gener_errors_matrix_map
         for gd_type in gd_types:
             for thres_type in thres_types:
-                gener_errors_matrix_map[gd_type + thres_type] = np.zeros(
-                    (self.steps, self.num_iter))
+                algo_name = gd_type + "+" + thres_type
+                algo_gener_errors_map[algo_name] = np.zeros((self.num_iter))
 
-        for i in range(self.steps):
-            y, H, self.SIGMA_half = GenerateData(self.design).generate_data()
-            for gd_type in gd_types:
-                for thres_type in thres_types:
-                    gener_errors_matrix = gener_errors_matrix_map[gd_type +
-                                                                  thres_type]
-                    _, best_lambda, gener_error = GradientDescent(
-                    ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
-                                       self.SIGMA_half, gd_type, thres_type,
-                                       False)
-                    print(gd_type, thres_type, best_lambda)
-                    gener_errors_matrix[i] = gener_error
-                    gener_errors_matrix_map[gd_type +
-                                            thres_type] = gener_errors_matrix
-        for gd_type in gd_types:
-            for thres_type in thres_types:
-                self.draw_result(gener_errors_matrix_map[gd_type + thres_type],
-                                 gd_type + " " + thres_type, "")
+        # To multiprocess several experiments.
+        self.gd_types = gd_types
+        self.thres_types = thres_types
+        pool = mp.Pool(mp.cpu_count())
+        pool_result = pool.map(self.run_one_experiment, [1] * self.steps, chunksize=1)
+        for algo_error_map in pool_result:
+            for algo_name in algo_error_map:
+                algo_gener_errors_map[algo_name] += algo_error_map[algo_name]
+        for algo_name in algo_gener_errors_map:
+            algo_gener_errors_map[algo_name] /= self.steps
+
+        for algo_name in algo_gener_errors_map:
+                plt.plot(algo_gener_errors_map[algo_name], label=algo_name)
         plt.title("Second order methods comparison in " + self.design +
                   " design")
         plt.xlabel("#iterations")
         plt.ylabel("generalization error")
+        plt.legend()
         if constants.HTP_NAME in thres_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
@@ -127,8 +130,8 @@ if __name__ == "__main__":
     """Run the simulation.
     """
     # Change gd_types and thres_types according to the needs.
-    gd_types = (constants.GD_NAME, constants.NGD_NAME, constants.NEWTON_NAME)
-    thres_types = (constants.IHT_NAME, )
+    gd_types = (constants.GD_NAME, constants.NEWTON_NAME)
+    thres_types = (constants.IHT_NAME, constants.HTP_NAME)
     """Draw the change of testing error w.r.t. (final) threshold.
         Please comment these two lines out if you do not need it.
     """

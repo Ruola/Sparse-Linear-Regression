@@ -1,10 +1,10 @@
-### Sparse linear regression
+## Sparse linear regression
 
-#### How to use
+### How to use
 - `git clone https://github.com/Ruola/Sparse-Linear-Regression.git`
 - `cd Sparse-Linear-Regression`
 
-#### Algorithms
+### Algorithms
 - Iterative threshold method / First-order methods (gradient descent).
   - Iterative soft threshold algorithm (ISTA)
   - Adaptive iterative hard threshold (Ada-IHT)
@@ -26,3 +26,4 @@
 
 ### Suggestions
 - The running time is very long in some simulations because of Newton and cross validation. Tmux, terminal multiplexer, is a common tool to save opening up multiple terminal sessions.
+- Use Python multiprocessing to run multiple processes simultaneously.

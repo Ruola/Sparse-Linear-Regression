@@ -111,7 +111,7 @@ class Compare:
             for thres_type in self.thres_types:
                 algo_name = gd_type + "+" + thres_type
                 algo_gener_errors_map[algo_name] = np.zeros((self.num_iter))
-        for algo_name in other_methods:
+        for algo_name in self.other_methods:
             algo_gener_errors_map[algo_name] = np.zeros((self.num_iter))
 
         # To multiprocess several experiments.
@@ -134,8 +134,12 @@ class Compare:
         if constants.HTP_NAME in thres_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
-                "/figures/second order methods/comparison in " + self.design +
-                " design HTP")
+                "/figures/HTP/comparison in " + self.design + " design HTP")
+        elif constants.FAST_NEWTON_NAME in self.other_methods:
+            plt.savefig(
+                os.path.dirname(os.path.abspath(__file__)) +
+                "/figures/fast newton/comparison in " + self.design +
+                " design fast newton")
         else:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +

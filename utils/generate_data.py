@@ -6,7 +6,7 @@ import utils.constants as constants
 class GenerateData:
     """Generate the model.
     """
-    def __init__(self, design=constants.ISOTROPIC_NAME, kappa=1.):
+    def __init__(self, design=constants.ISOTROPIC_NAME, kappa=10.):
         """Initialize the model.
         
         @param design - the type of design matrix, e.g. isotropic or anisotropic.

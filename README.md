@@ -18,6 +18,9 @@
 - To compare gradient descent methods (gd, ngd, newton) with IHT / HTP.
   - `python3 compare_gradient_descent.py`.
   - Results are in `/figures/second order methods/`.
+- To get the change of error w.r.t. the condition number.
+  - `python3 change_condition_number.py`.
+  - Results are in `/figures/condition number/`.
 
 ### Unit tests
 

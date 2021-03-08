@@ -60,9 +60,9 @@ class ChangeConditionNumber:
                                              kappa).generate_data()
         algos_map = dict()
         for algo_name in self.iterative_threshold_methods:
-            _, best_lambda, gener_error = IterativeThresholdMethods().get_errors_by_cv(
-                self.x_original, y, H, self.num_iter, self.SIGMA_half,
-                algo_name, False)
+            _, best_lambda, gener_error = IterativeThresholdMethods(
+            ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                               self.SIGMA_half, algo_name, False)
             # To add {algo_name: {kappa, final_error}} key-value-pair to algos_map.
             algos_map = self._update_algos_map(algos_map, algo_name, kappa,
                                                gener_error[-1])
@@ -72,10 +72,10 @@ class ChangeConditionNumber:
                 _, _, gener_error = GradientDescent().get_errors_by_cv(
                     self.x_original, y, H, self.num_iter, self.SIGMA_half,
                     gd_type, iter_type, False)
-                algo_name = gd_type + iter_type
+                algo_name = gd_type + "+" + iter_type
                 algos_map = self._update_algos_map(algos_map, algo_name, kappa,
                                                    gener_error[-1])
-                print(algo_name, " error ", gener_error[-1])
+                print(algo_name, best_lambda)
         return algos_map
 
     def compare_condition_numbers(self):
@@ -84,13 +84,10 @@ class ChangeConditionNumber:
         algos_map = {}
         for _ in range(self.steps):  # Run several experiments
             pool = mp.Pool(mp.cpu_count())
-            pool_results = pool.map(self.run_one_experiment, np.arange(1, 51, 10), 1)
+            pool_results = pool.map(self.run_one_experiment,
+                                    np.arange(1, 101, 10), 1)
             for map_result in pool_results:
-                for algo_name in map_result:
-                    for kappa in map_result[algo_name]:
-                        algos_map = self._update_algos_map(
-                            algos_map, algo_name, kappa,
-                            map_result[algo_name][kappa])
+                algos_map.update(map_result)
 
         # To take average on the error of experiments.
         for algo_name in algos_map:
@@ -105,6 +102,7 @@ class ChangeConditionNumber:
             Draw().plot_using_a_map(algos_map[algo_name], algo_name)
         plt.xlabel("condition number")
         plt.ylabel("generalization error")
+        plt.title("Change condition number of design matrix")
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +

@@ -6,7 +6,7 @@ from utils.error import Error
 
 
 class GradientDescent:
-    """Use gradient descent (gd), natural gd or newton method with IHT/HTP to solve sparse linear regression.
+    """Use gradient descent (gd), natural gd, newton or fast newton method with IHT/HTP to solve sparse linear regression.
     """
     def get_gd_step_size(self, H, gd_type: str, inv_sigma):
         """Compute the step size of gradient descent.
@@ -60,7 +60,8 @@ class GradientDescent:
             x = np.insert(x, i, 0)
         return x
 
-    def update_signal_estimation(self, x, y, H, lambda_step, gd_type, iter_index, iter_type):
+    def update_signal_estimation(self, x, y, H, lambda_step, gd_type,
+                                 iter_index, iter_type):
         """Get the estimation by IHT or HTP.
         This step follows the gradient descent step. 
         Update the estimation by pluging coordinates that are smaller than the threshold to zero.
@@ -133,12 +134,14 @@ class GradientDescent:
             x = x + self.get_gradient_descent_step(x, y, H, gd_type, inv_sigma,
                                                    step_size)
             # To update estimation by IHT or HTP.
-            x = self.update_signal_estimation(x, y, H, lambda_step, gd_type, i, iter_type)
+            x = self.update_signal_estimation(x, y, H, lambda_step, gd_type, i,
+                                              iter_type)
             if errors_needed:
                 gener_errors[i] = Error().get_gener_error(
                     x_original, x, SIGMA_half)
             # update threshold
-            if not (gd_type == constants.FAST_NEWTON_NAME and i % constants.FAST_NEWTON_NUM_GD == 0):
+            if not (gd_type == constants.FAST_NEWTON_NAME
+                    and i % constants.FAST_NEWTON_NUM_GD == 0):
                 lambda_step *= 0.95
             if lambda_step < final_threshold:
                 lambda_step = final_threshold

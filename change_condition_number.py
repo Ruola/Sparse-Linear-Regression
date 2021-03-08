@@ -60,13 +60,13 @@ class ChangeConditionNumber:
                                              kappa).generate_data()
         algos_map = dict()
         for algo_name in self.iterative_threshold_methods:
-            _, _, gener_error = IterativeThresholdMethods().get_errors_by_cv(
+            _, best_lambda, gener_error = IterativeThresholdMethods().get_errors_by_cv(
                 self.x_original, y, H, self.num_iter, self.SIGMA_half,
                 algo_name, False)
             # To add {algo_name: {kappa, final_error}} key-value-pair to algos_map.
             algos_map = self._update_algos_map(algos_map, algo_name, kappa,
                                                gener_error[-1])
-            print(algo_name, " error ", gener_error[-1])
+            print(algo_name, best_lambda)
         for gd_type in self.gd_types:
             for iter_type in self.iter_types:
                 _, _, gener_error = GradientDescent().get_errors_by_cv(
@@ -84,7 +84,7 @@ class ChangeConditionNumber:
         algos_map = {}
         for _ in range(self.steps):  # Run several experiments
             pool = mp.Pool(mp.cpu_count())
-            pool_results = pool.map(self.run_one_experiment, np.arange(1, 40, 5), 1)
+            pool_results = pool.map(self.run_one_experiment, np.arange(1, 51, 10), 1)
             for map_result in pool_results:
                 for algo_name in map_result:
                     for kappa in map_result[algo_name]:
@@ -108,7 +108,7 @@ class ChangeConditionNumber:
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/condition number/comparison by change of condition number0"
+            "/figures/condition number/comparison by change of condition number"
         )
         plt.clf()
 

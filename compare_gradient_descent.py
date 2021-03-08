@@ -5,7 +5,6 @@ import multiprocessing as mp
 import numpy as np
 import os
 
-from algorithms.fast_newton import FastNewton
 from algorithms.gradient_descent import GradientDescent
 from algorithms.iterative_threshold_methods import IterativeThresholdMethods
 import utils.constants as constants
@@ -20,9 +19,9 @@ class Compare:
         """Set the type of design matrix, e.g. isotropic or anisotropic.
 
         @param design - the type of design matrix, e.g. isotropic or anisotropic.
-        @param gd_types - GD, NGD, or Newton.
+        @param gd_types - GD, NGD, Newton or FastNewton.
         @param thres_types - IHT or HTP.
-        @param other_methods - ISTA or Fast Newton.
+        @param other_methods - ISTA.
         """
         self.design = design
         self.gd_types = gd_types
@@ -33,10 +32,10 @@ class Compare:
         self.x_original = constants.X
 
     def draw_change_of_error_by_threshold(self, map_of_thres_error, type: str):
-        """Get the change of testing error w.r.t. the threshold in ISTA and AdaIHT.
+        """Get the change of testing error w.r.t. the threshold in second order methods.
 
         @param map_of_thres_error: keys are thresholds and values are errors.
-        @param type: "ISTA" or "AdaIHT"
+        @param type: algorithm names, e.g. "GD+AdaIHT".
         """
         thresholds, errors = zip(*sorted(map_of_thres_error.items()))
         best_thres = min(map_of_thres_error, key=map_of_thres_error.get)
@@ -84,16 +83,11 @@ class Compare:
                 algo_error_map[algo_name] = gener_error
                 print(gd_type, thres_type, best_lambda)
         for algo_name in self.other_methods:
-            if algo_name == constants.FAST_NEWTON_NAME:
-                _, _, gener_error = FastNewton().get_errors_by_cv(
-                    self.x_original, y, H, self.num_iter, self.SIGMA_half,
-                    constants.FAST_NEWTON_NUM_GD, False)
-            else:
-                _, _, gener_error = IterativeThresholdMethods(
-                ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
-                                   self.SIGMA_half, algo_name, False)
+            _, best_lambda, gener_error = IterativeThresholdMethods(
+            ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                                self.SIGMA_half, algo_name, False)
             algo_error_map[algo_name] = gener_error
-            print(algo_name, " error ", gener_error[-1])
+            print(algo_name, best_lambda)
         return algo_error_map
 
     def compare_gradient_descent(self):
@@ -135,7 +129,7 @@ class Compare:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/HTP/comparison in " + self.design + " design HTP")
-        elif constants.FAST_NEWTON_NAME in self.other_methods:
+        elif constants.FAST_NEWTON_NAME in self.gd_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/fast newton/comparison in " + self.design +
@@ -151,10 +145,14 @@ class Compare:
 if __name__ == "__main__":
     """Run the simulation.
     """
-    # Change gd_types and thres_types according to the needs.
-    gd_types = (constants.GD_NAME, constants.NEWTON_NAME)
+    """Change gd_types and thres_types according to the needs.    
+    gd_types = (constants.GD_NAME, constants.NGD_NAME, constants.NEWTON_NAME, constants.FAST_NEWTON_NAME)
     thres_types = (constants.IHT_NAME, constants.HTP_NAME)
-    other_methods = (constants.FAST_NEWTON_NAME, )
+    other_methods = (constants.ISTA_NAME, )
+    """
+    gd_types = (constants.GD_NAME, constants.NEWTON_NAME, constants.FAST_NEWTON_NAME)
+    thres_types = (constants.IHT_NAME, constants.HTP_NAME)
+    other_methods = (constants.ISTA_NAME,)
 
     isotropic_obj = Compare(constants.ISOTROPIC_NAME, gd_types, thres_types,
                             other_methods)

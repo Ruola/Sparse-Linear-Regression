@@ -86,9 +86,13 @@ class ChangeConditionNumber:
             pool = mp.Pool(mp.cpu_count())
             pool_results = pool.map(self.run_one_experiment,
                                     np.arange(1, 101, 10), 1)
+            # To add pool_results into algos_map
             for map_result in pool_results:
-                algos_map.update(map_result)
-
+                for algo_name in map_result:
+                    if algos_map.get(algo_name):
+                        algos_map[algo_name].update(map_result[algo_name])
+                    else:
+                        algos_map[algo_name] = map_result[algo_name]
         # To take average on the error of experiments.
         for algo_name in algos_map:
             curr_kappa_error_map = algos_map[algo_name]
@@ -97,6 +101,7 @@ class ChangeConditionNumber:
                     kappa]  # Total errors of all experiments.
                 curr_kappa_error_map[
                     kappa] = total_error / self.steps  # To take average.
+                print(algo_name, kappa, total_error / self.steps)
             algos_map[algo_name] = curr_kappa_error_map  # to update algos_map
         for algo_name in algos_map:
             Draw().plot_using_a_map(algos_map[algo_name], algo_name)

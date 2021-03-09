@@ -102,6 +102,7 @@ class CompareIterativeThresholdMethods:
         for algo_name in (constants.IHT_NAME, constants.ISTA_NAME):
             gener_errors = np.mean(gener_errors_matrices_map[algo_name], axis=0)
             plt.plot(gener_errors, label=algo_name)
+            print(algo_name, "error", gener_errors[-1])
         plt.xlabel("#iterations")
         plt.ylabel("generalization error")
         plt.title("Compare convergence rate of ISTA and IHT " + self.design)

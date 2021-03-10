@@ -36,5 +36,5 @@ class GenerateData:
         H = np.dot(np.random.randn(self.n, self.p), self.SIGMA_half)
         # y = H * x + noise
         y = np.dot(H, self.x) + np.random.normal(
-            self.mu, self.sigma, size=(self.n, 1))
+            self.mu, self.sigma, size=(self.n))
         return (y, H, self.SIGMA_half)

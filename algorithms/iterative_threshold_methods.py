@@ -57,7 +57,7 @@ class IterativeThresholdMethods:
         @param iterative_method_type - "ISTA" or "AdaIHT"
         @return x - recovered signal
         """
-        x = np.zeros((len(H[0]), 1))
+        x = np.zeros((constants.P))
         if iterative_method_type == constants.IHT_NAME:
             lambda_step = np.max(alpha * np.dot(np.transpose(H), y - np.dot(H, x)))
         else:  #ISTA
@@ -88,7 +88,7 @@ class IterativeThresholdMethods:
             gener_errors- record errors of estimations of each iterations, 
             and the details of definition of the error are in Error class.
         """
-        x = np.zeros((len(H[0]), 1))
+        x = np.zeros((len(H[0])))
         if iterative_method_type == constants.IHT_NAME:
             lambda_step = np.max(alpha * np.dot(np.transpose(H), y - np.dot(H, x)))
         else:  #ISTA

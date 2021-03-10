@@ -82,8 +82,7 @@ class GradientDescent:
         else:  # HTP: hard threshold pursuit
             """x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
             """
-            indices_removed = np.ravel(
-                np.delete(np.argwhere(np.abs(x) < lambda_step), 1, 1))
+            indices_removed = np.argwhere(np.abs(x) < lambda_step)
             if len(indices_removed) != len(x):
                 # in case H'H is 0 * 0 dimension
                 H_sparse = np.delete(np.copy(H), indices_removed, 1)
@@ -91,7 +90,7 @@ class GradientDescent:
                     pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
                     np.dot(np.transpose(H_sparse), y))
                 x_temp = x_temp.reshape(-1)
-                x[:, 0] = self._insert_zero(x_temp, indices_removed)
+                x = self._insert_zero(x_temp, indices_removed)
         return x
 
     def get_estimation(self,
@@ -118,7 +117,7 @@ class GradientDescent:
         @return x - estimation \hat{x};
                 gener_errors - generalization errors of estimation in each iteration
         """
-        x = np.zeros((len(H[0]), 1))  # initial value of estimation
+        x = np.zeros((constants.P))  # initial value of estimation
         gener_errors = [
             0
         ] * num_iter  # record generalization errors of estimation in each iteration

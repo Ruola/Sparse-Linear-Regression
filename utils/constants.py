@@ -26,7 +26,7 @@ MU = 0
 SIGMA_NUMBER = .1
 # signal
 X_VALUE = 1.
-X = X_VALUE * np.ones((P,1))
+X = X_VALUE * np.ones((P))
 #x[:p-s] = 0
 X[S:] = 0
 X = np.random.permutation(X)

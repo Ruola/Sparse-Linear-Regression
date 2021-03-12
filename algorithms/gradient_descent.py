@@ -8,6 +8,11 @@ from utils.error import Error
 class GradientDescent:
     """Use gradient descent (gd), natural gd, newton or fast newton method with IHT/HTP to solve sparse linear regression.
     """
+    def __init__(self, fast_newton_num_gd=constants.FAST_NEWTON_NUM_GD):
+        """@param fast_newton_num_gd - the number of gradient descent iterations before thresholding in Fast Newton.
+        """
+        self.fast_newton_num_gd = fast_newton_num_gd
+
     def get_gd_step_size(self, H, gd_type: str, inv_sigma):
         """Compute the step size of gradient descent.
         
@@ -74,7 +79,7 @@ class GradientDescent:
         @param iter_type - includes iterative hard threshold (IHT), hard threshold pursuit (HTP).
         """
         if gd_type == constants.FAST_NEWTON_NAME:
-            if iter_index % constants.FAST_NEWTON_NUM_GD == 0:
+            if iter_index % self.fast_newton_num_gd == 0:
                 x[np.abs(x) < lambda_step] = 0
             return x
         if iter_type == constants.IHT_NAME:  # iterative hard threshold
@@ -140,7 +145,7 @@ class GradientDescent:
                     x_original, x, SIGMA_half)
             # update threshold
             if not (gd_type == constants.FAST_NEWTON_NAME
-                    and i % constants.FAST_NEWTON_NUM_GD == 0):
+                    and i % self.fast_newton_num_gd == 0):
                 lambda_step *= 0.95
             if lambda_step < final_threshold:
                 lambda_step = final_threshold

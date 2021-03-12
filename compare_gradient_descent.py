@@ -30,6 +30,7 @@ class Compare:
         self.steps = constants.GD_STEPS  # number of experiments
         self.num_iter = constants.GD_NUM_ITERATION  # number of iterations
         self.x_original = constants.X
+        self.fast_newton_num_gd_tuple = (10, 20)
 
     def draw_change_of_error_by_threshold(self, map_of_thres_error, type: str):
         """Get the change of testing error w.r.t. the threshold in second order methods.
@@ -74,18 +75,32 @@ class Compare:
         """
         y, H, self.SIGMA_half = GenerateData(self.design).generate_data()
         algo_error_map = dict()
+        # To run algorithms to solve the linear regression.
         for gd_type in self.gd_types:
             for thres_type in self.thres_types:
-                algo_name = gd_type + "+" + thres_type
-                _, best_lambda, gener_error = GradientDescent(
-                ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
-                                   self.SIGMA_half, gd_type, thres_type, False)
-                algo_error_map[algo_name] = gener_error
-                print(gd_type, thres_type, best_lambda)
+                if gd_type == constants.FAST_NEWTON_NAME:
+                    # The number of GradientDescent iterations before thresholding.
+                    for fast_newton_num_gd in self.fast_newton_num_gd_tuple:
+                        algo_name = gd_type + "+" + thres_type + str(
+                            fast_newton_num_gd)
+                        _, best_lambda, gener_error = GradientDescent(
+                            fast_newton_num_gd).get_errors_by_cv(
+                                self.x_original, y, H, self.num_iter,
+                                self.SIGMA_half, gd_type, thres_type, False)
+                        algo_error_map[algo_name] = gener_error
+                        print(gd_type, thres_type, best_lambda)
+                else:
+                    algo_name = gd_type + "+" + thres_type
+                    _, best_lambda, gener_error = GradientDescent(
+                    ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+                                       self.SIGMA_half, gd_type, thres_type,
+                                       False)
+                    algo_error_map[algo_name] = gener_error
+                    print(gd_type, thres_type, best_lambda)
         for algo_name in self.other_methods:
             _, best_lambda, gener_error = IterativeThresholdMethods(
             ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
-                                self.SIGMA_half, algo_name, False)
+                               self.SIGMA_half, algo_name, False)
             algo_error_map[algo_name] = gener_error
             print(algo_name, best_lambda)
         return algo_error_map
@@ -100,22 +115,21 @@ class Compare:
         Value: a matrix - each row is an experiment and each column is an iteraton
         """
         algo_gener_errors_map = dict()
-        # Set initial value of gener_errors_matrix_map
-        for gd_type in self.gd_types:
-            for thres_type in self.thres_types:
-                algo_name = gd_type + "+" + thres_type
-                algo_gener_errors_map[algo_name] = np.zeros((self.num_iter))
-        for algo_name in self.other_methods:
-            algo_gener_errors_map[algo_name] = np.zeros((self.num_iter))
-
         # To multiprocess several experiments.
         pool = mp.Pool(mp.cpu_count())
         pool_result = pool.map(self.run_one_experiment, [1] * self.steps,
                                chunksize=1)
+        # To add pool_result into algo_gener_errors_map.
         for algo_error_map in pool_result:
             for algo_name in algo_error_map:
+                if not algo_gener_errors_map.get(algo_name):
+                    # Make sure that the value of algo_gener_errors_map is numpy.array.
+                    algo_gener_errors_map[algo_name] = np.zeros(
+                        (self.num_iter))
+                # It is numpy.add().
                 algo_gener_errors_map[algo_name] += algo_error_map[algo_name]
         for algo_name in algo_gener_errors_map:  # take average
+            # It is numpy.divide().
             algo_gener_errors_map[algo_name] /= self.steps
 
         for algo_name in algo_gener_errors_map:  # plot
@@ -150,9 +164,9 @@ if __name__ == "__main__":
     thres_types = (constants.IHT_NAME, constants.HTP_NAME)
     other_methods = (constants.ISTA_NAME, )
     """
-    gd_types = (constants.GD_NAME, constants.NEWTON_NAME, constants.FAST_NEWTON_NAME)
-    thres_types = (constants.IHT_NAME, constants.HTP_NAME)
-    other_methods = (constants.ISTA_NAME,)
+    gd_types = (constants.FAST_NEWTON_NAME, constants.NEWTON_NAME)
+    thres_types = (constants.IHT_NAME, )
+    other_methods = ()
 
     isotropic_obj = Compare(constants.ISOTROPIC_NAME, gd_types, thres_types,
                             other_methods)

@@ -39,6 +39,16 @@ class TestGradientDescent(unittest.TestCase):
         x_expected = np.asarray([2., 0., 3.])
         np.testing.assert_array_equal(x_updated, x_expected)
 
+    def test_get_gradient_descent_step(self):
+        x = np.asarray([2, 3, 5])
+        H = np.asarray([[2., 1, 0], [0, 1, 2]])
+        y = np.dot(H, x)
+        gd_type = constants.GD_NAME
+        inv_sigma = None
+        step_size = 1.1
+        output = GradientDescent().get_gradient_descent_step(x, y, H, gd_type, inv_sigma, step_size)
+        expect_output = np.zeros((3))
+        np.testing.assert_array_equal(output, expect_output)
 
 if __name__ == '__main__':
     unittest.main()

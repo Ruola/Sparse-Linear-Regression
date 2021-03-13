@@ -54,6 +54,27 @@ class GradientDescent:
                 np.dot(pinvh(np.dot(np.transpose(H), H)), np.transpose(H)),
                 y - np.dot(H, x))
 
+    def run_hard_threshold_pursuit(self, x, y, H, lambda_step):
+        """Run the thresholding step by HTP.
+        
+        x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
+        @param x - signal estimation.
+        @param y - the observations/response.
+        @param H - the design matrix.
+        @param lambda_step - the threshold.
+        @return signal estimation.
+        """
+        indices_removed = np.argwhere(np.abs(x) < lambda_step)
+        if len(indices_removed) != len(x):
+            # in case H'H is 0 * 0 dimension
+            H_sparse = np.delete(np.copy(H), indices_removed, 1)
+            x_temp = np.dot(
+                pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
+                np.dot(np.transpose(H_sparse), y))
+            x_temp = x_temp.reshape(-1)
+            x = self._insert_zero(x_temp, indices_removed)
+        return x
+
     def _insert_zero(self, x, indices_removed):
         """A function to add zero elements into x as the list of indices removed previously.
         
@@ -78,24 +99,19 @@ class GradientDescent:
         @param gd_type - includes gradient descent, natural gd, newton method, fast newton.
         @param iter_type - includes iterative hard threshold (IHT), hard threshold pursuit (HTP).
         """
-        if gd_type == constants.FAST_NEWTON_NAME:
-            if iter_index % self.fast_newton_num_gd == 0:
-                x[np.abs(x) < lambda_step] = 0
-            return x
         if iter_type == constants.IHT_NAME:  # iterative hard threshold
-            x[np.abs(x) < lambda_step] = 0
+            if gd_type == constants.FAST_NEWTON_NAME:
+                if iter_index % self.fast_newton_num_gd == 0:
+                    # Thresholding every self.fast_newton_num_gd iterations.
+                    x[np.abs(x) < lambda_step] = 0
+            else:
+                x[np.abs(x) < lambda_step] = 0
         else:  # HTP: hard threshold pursuit
-            """x = (H_sparse^T * H_sparse)^(-1) * H_sparse^T * y
-            """
-            indices_removed = np.argwhere(np.abs(x) < lambda_step)
-            if len(indices_removed) != len(x):
-                # in case H'H is 0 * 0 dimension
-                H_sparse = np.delete(np.copy(H), indices_removed, 1)
-                x_temp = np.dot(
-                    pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
-                    np.dot(np.transpose(H_sparse), y))
-                x_temp = x_temp.reshape(-1)
-                x = self._insert_zero(x_temp, indices_removed)
+            if gd_type == constants.FAST_NEWTON_NAME:
+                if iter_index % self.fast_newton_num_gd == 0:
+                    x = self.run_hard_threshold_pursuit(x, y, H, lambda_step)
+            else:
+                x = self.run_hard_threshold_pursuit(x, y, H, lambda_step)
         return x
 
     def get_estimation(self,

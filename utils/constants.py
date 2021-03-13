@@ -18,7 +18,7 @@ ANISOTROPIC_NAME = "anisotropic"
 STEPS = 20  # number of experiments
 N_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 GD_STEPS = 10  # number of experiments in compare_gradient_descent
-GD_NUM_ITERATION = 200  # number of iterations in ISTA or Hard Threshold
+GD_NUM_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 FAST_NEWTON_NUM_GD = 10 # number of gradient descent steps in fast newton
 N, P, S = 200, 1000, 10
 # noise
@@ -34,7 +34,7 @@ X = np.random.permutation(X)
 FAST_NEWTON_NAME = "FastNewton"
 ISTA_NAME = "ISTA"
 IHT_NAME = "AdaIHT"
-HTP_NAME = "HTP"
+HTP_NAME = "AdaHTP"
 
 GD_NAME = "gd"
 NGD_NAME = "ngd"

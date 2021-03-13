@@ -24,7 +24,7 @@ class ChangeConditionNumber:
         self.num_iter = constants.GD_NUM_ITERATION  # number of iterations
         self.x_original = x
         self.gd_types = (constants.GD_NAME, constants.FAST_NEWTON_NAME)
-        self.iter_types = (constants.IHT_NAME, )
+        self.iter_types = (constants.IHT_NAME, constants.HTP_NAME)
         self.iterative_threshold_methods = (constants.ISTA_NAME, )
 
     def _update_algos_map(self, algos_map, algo_name, kappa, error_added):
@@ -88,7 +88,7 @@ class ChangeConditionNumber:
         for _ in range(self.steps):  # Run several experiments
             pool = mp.Pool(mp.cpu_count())
             pool_results = pool.map(self.run_one_experiment,
-                                    np.arange(1, 101, 10), 1)
+                                    np.arange(1, 101, 5), 1)
             # To add pool_results into algos_map
             for map_result in pool_results:
                 for algo_name in map_result:

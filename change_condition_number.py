@@ -16,14 +16,14 @@ from utils.generate_data import GenerateData
 class ChangeConditionNumber:
     """Simulations on the change of condition number of design matrix.
     """
-    def __init__(self):
+    def __init__(self, x=constants.X):
         """Set the type of design matrix, anisotropic and some constants.
         """
         self.design = constants.ANISOTROPIC_NAME
         self.steps = constants.GD_STEPS  # number of experiments
         self.num_iter = constants.GD_NUM_ITERATION  # number of iterations
-        self.x_original = constants.X
-        self.gd_types = (constants.GD_NAME, constants.NEWTON_NAME)
+        self.x_original = x
+        self.gd_types = (constants.GD_NAME, constants.FAST_NEWTON_NAME)
         self.iter_types = (constants.IHT_NAME, )
         self.iterative_threshold_methods = (constants.ISTA_NAME, )
 
@@ -56,8 +56,11 @@ class ChangeConditionNumber:
         @param kappa - condition number.
         @return algo_name gener_error hashmap.
         """
-        y, H, self.SIGMA_half = GenerateData(self.design,
-                                             kappa).generate_data()
+        y, H, self.SIGMA_half = GenerateData(
+            self.design,
+            kappa,
+            self.x_original
+        ).generate_data()
         algos_map = dict()
         for algo_name in self.iterative_threshold_methods:
             _, best_lambda, gener_error = IterativeThresholdMethods(
@@ -107,7 +110,7 @@ class ChangeConditionNumber:
             Draw().plot_using_a_map(algos_map[algo_name], algo_name)
         plt.xlabel("condition number")
         plt.ylabel("generalization error")
-        plt.title("Change condition number of design matrix")
+        plt.title("Change condition number of design matrix x " + str(np.max(self.x_original)))
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
@@ -117,4 +120,10 @@ class ChangeConditionNumber:
 
 
 if __name__ == "__main__":
-    ChangeConditionNumber().compare_condition_numbers()
+    """To change the true signal, modify x_value.
+    """
+    x_value = 0.5
+    x = x_value * np.ones((constants.P))
+    x[constants.S:] = 0
+    x = np.random.permutation(x)
+    ChangeConditionNumber(x).compare_condition_numbers()

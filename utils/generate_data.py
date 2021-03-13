@@ -6,7 +6,7 @@ import utils.constants as constants
 class GenerateData:
     """Generate the model.
     """
-    def __init__(self, design=constants.ISOTROPIC_NAME, kappa=10.):
+    def __init__(self, design=constants.ISOTROPIC_NAME, kappa=10., x=constants.X):
         """Initialize the model.
         
         @param design - the type of design matrix, e.g. isotropic or anisotropic.
@@ -14,10 +14,8 @@ class GenerateData:
         """
         self.design = design
         self.mu = constants.MU
-        self.steps = constants.STEPS  # number of experiments
-        self.N = constants.N_ITERATION  # number of iterations in ISTA or Hard Threshold
         self.n, self.p, self.s = constants.N, constants.P, constants.S
-        self.x = constants.X
+        self.x = x
         # half of design covariance
         temp = np.ones((constants.P))
         if self.design == constants.ISOTROPIC_NAME:

@@ -19,7 +19,7 @@ STEPS = 20  # number of experiments
 N_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 GD_STEPS = 10  # number of experiments in compare_gradient_descent
 GD_NUM_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
-FAST_NEWTON_NUM_GD = 10 # number of gradient descent steps in fast newton
+FAST_NEWTON_NUM_GD = 10  # number of gradient descent steps in fast newton
 N, P, S = 200, 1000, 10
 # noise
 MU = 0
@@ -30,6 +30,10 @@ X = X_VALUE * np.ones((P))
 #x[:p-s] = 0
 X[S:] = 0
 X = np.random.permutation(X)
+
+TUNED_PARA_CROSS_VALI = [
+    0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1., 5., 10.
+]
 
 FAST_NEWTON_NAME = "FastNewton"
 ISTA_NAME = "ISTA"

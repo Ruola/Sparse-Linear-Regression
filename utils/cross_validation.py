@@ -2,6 +2,7 @@ import math
 import numpy as np
 from typing import Callable, Dict
 
+import utils.constants as constants
 
 class CrossValidation:
     """k fold cross validation. Used by ista_cross_validation.py
@@ -42,7 +43,7 @@ class CrossValidation:
         best_para = None
         map_para_error: Dict[float, float] = dict()
         # map_para_error is a map with thres as keys and validation errors as values.
-        for para in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1., 5., 10.]:
+        for para in constants.TUNED_PARA_CROSS_VALI:
             val_error = 0.
             for i in range(self.k):
                 y_val = self.y[math.floor(i * self.n /

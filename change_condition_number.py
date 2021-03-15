@@ -56,11 +56,8 @@ class ChangeConditionNumber:
         @param kappa - condition number.
         @return algo_name gener_error hashmap.
         """
-        y, H, self.SIGMA_half = GenerateData(
-            self.design,
-            kappa,
-            self.x_original
-        ).generate_data()
+        y, H, self.SIGMA_half = GenerateData(self.design, kappa,
+                                             self.x_original).generate_data()
         algos_map = dict()
         for algo_name in self.iterative_threshold_methods:
             _, best_lambda, gener_error = IterativeThresholdMethods(
@@ -92,25 +89,16 @@ class ChangeConditionNumber:
             # To add pool_results into algos_map
             for map_result in pool_results:
                 for algo_name in map_result:
-                    if algos_map.get(algo_name):
-                        algos_map[algo_name].update(map_result[algo_name])
-                    else:
-                        algos_map[algo_name] = map_result[algo_name]
-        # To take average on the error of experiments.
-        for algo_name in algos_map:
-            curr_kappa_error_map = algos_map[algo_name]
-            for kappa in curr_kappa_error_map:  # to update curr_kappa_error_map
-                total_error = curr_kappa_error_map[
-                    kappa]  # Total errors of all experiments.
-                curr_kappa_error_map[
-                    kappa] = total_error / self.steps  # To take average.
-                print(algo_name, kappa, total_error / self.steps)
-            algos_map[algo_name] = curr_kappa_error_map  # to update algos_map
+                    for kappa in map_result[algo_name]:
+                        error = map_result[algo_name][kappa] / self.steps
+                        algos_map = self._update_algos_map(
+                            algos_map, algo_name, kappa, error)
         for algo_name in algos_map:
             Draw().plot_using_a_map(algos_map[algo_name], algo_name)
         plt.xlabel("condition number")
         plt.ylabel("generalization error")
-        plt.title("Change condition number of design matrix x " + str(np.max(self.x_original)))
+        plt.title("Change condition number of design matrix x " +
+                  str(np.max(self.x_original)))
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
@@ -122,7 +110,7 @@ class ChangeConditionNumber:
 if __name__ == "__main__":
     """To change the true signal, modify x_value.
     """
-    x_value = 0.5
+    x_value = 1.
     x = x_value * np.ones((constants.P))
     x[constants.S:] = 0
     x = np.random.permutation(x)

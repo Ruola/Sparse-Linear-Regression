@@ -69,7 +69,7 @@ class ChangeConditionNumber:
             print(algo_name, best_lambda)
         for gd_type in self.gd_types:
             for iter_type in self.iter_types:
-                _, _, gener_error = GradientDescent().get_errors_by_cv(
+                _, best_lambda, gener_error = GradientDescent().get_errors_by_cv(
                     self.x_original, y, H, self.num_iter, self.SIGMA_half,
                     gd_type, iter_type, False)
                 algo_name = gd_type + "+" + iter_type

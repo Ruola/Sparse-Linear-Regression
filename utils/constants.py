@@ -15,9 +15,9 @@ import numpy as np
 ISOTROPIC_NAME = "isotropic"
 ANISOTROPIC_NAME = "anisotropic"
 
-STEPS = 20  # number of experiments
+STEPS = 200  # number of experiments
 N_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
-GD_STEPS = 10  # number of experiments in compare_gradient_descent
+GD_STEPS = 20  # number of experiments in compare_gradient_descent
 GD_NUM_ITERATION = 400  # number of iterations in ISTA or Hard Threshold
 FAST_NEWTON_NUM_GD = 10  # number of gradient descent steps in fast newton
 N, P, S = 200, 1000, 10

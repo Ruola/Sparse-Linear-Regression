@@ -134,27 +134,37 @@ class Compare:
 
         for algo_name in algo_gener_errors_map:  # plot
             plt.plot(algo_gener_errors_map[algo_name], label=algo_name)
-        # Store @param algo_gener_errors_map in a npy (binary) format.
-        with open(
-                os.path.dirname(os.path.abspath(__file__)) +
-                '/figures/HTP/result_dict_' + self.design + '.npy', 'wb') as f:
-            np.save(f, algo_gener_errors_map)
         plt.title("Second order methods comparison in " + self.design +
                   " design")
         plt.xlabel("#iterations")
         plt.ylabel("generalization error")
         plt.legend()
         if constants.HTP_NAME in thres_types:
+            # Store @param algo_gener_errors_map in a npy (binary) format.
+            with open(
+                    os.path.dirname(os.path.abspath(__file__)) +
+                    '/figures/HTP/result_dict_' + self.design + '.npy', 'wb') as f:
+                np.save(f, algo_gener_errors_map)
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/HTP/comparison in " + self.design +
                 " design HTP.pdf")
         elif constants.FAST_NEWTON_NAME in self.gd_types:
+            # Store @param algo_gener_errors_map in a npy (binary) format.
+            with open(
+                    os.path.dirname(os.path.abspath(__file__)) +
+                    '/figures/fast newton/result_dict_' + self.design + '.npy', 'wb') as f:
+                np.save(f, algo_gener_errors_map)
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/fast newton/comparison in " + self.design +
                 " design fast newton.pdf")
         else:
+            # Store @param algo_gener_errors_map in a npy (binary) format.
+            with open(
+                    os.path.dirname(os.path.abspath(__file__)) +
+                    '/figures/second order methods/result_dict_' + self.design + '.npy', 'wb') as f:
+                np.save(f, algo_gener_errors_map)
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/second order methods/comparison in " + self.design +

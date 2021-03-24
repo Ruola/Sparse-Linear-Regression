@@ -65,7 +65,8 @@ class Compare:
                     map_of_thres_error, self.gd_type + " + " + self.thres_type)
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/second order methods/error by threshold " + self.design + ".pdf")
+            "/figures/second order methods/error by threshold " + self.design +
+            ".pdf")
         plt.clf()
 
     def run_one_experiment(self, dummy):
@@ -123,15 +124,13 @@ class Compare:
         # To add pool_result into algo_gener_errors_map.
         for algo_error_map in pool_result:
             for algo_name in algo_error_map:
-                if not algo_gener_errors_map.get(algo_name):
+                if algo_gener_errors_map.get(algo_name) is None:
                     # Make sure that the value of algo_gener_errors_map is numpy.array.
                     algo_gener_errors_map[algo_name] = np.zeros(
                         (self.num_iter))
                 # It is numpy.add().
-                algo_gener_errors_map[algo_name] += algo_error_map[algo_name]
-        for algo_name in algo_gener_errors_map:  # take average
-            # It is numpy.divide().
-            algo_gener_errors_map[algo_name] /= self.steps
+                algo_gener_errors_map[
+                    algo_name] += algo_error_map[algo_name] / self.steps
 
         for algo_name in algo_gener_errors_map:  # plot
             plt.plot(algo_gener_errors_map[algo_name], label=algo_name)
@@ -148,7 +147,8 @@ class Compare:
         if constants.HTP_NAME in thres_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
-                "/figures/HTP/comparison in " + self.design + " design HTP.pdf")
+                "/figures/HTP/comparison in " + self.design +
+                " design HTP.pdf")
         elif constants.FAST_NEWTON_NAME in self.gd_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +

@@ -63,7 +63,7 @@ class CrossValidation:
                 x = self.algo_f(y_train, H_train, para)
                 val_error += self.get_vali_error(x, y_val, H_val, para)
             val_error /= self.k
-            if best_para == None or val_error < smallest_val_error:
+            if best_para is None or val_error < smallest_val_error:
                 smallest_val_error = val_error
                 best_para = para
             map_para_error[para] = val_error

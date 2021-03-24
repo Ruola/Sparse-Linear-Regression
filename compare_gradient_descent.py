@@ -130,7 +130,7 @@ class Compare:
                         (self.num_iter))
                 # It is numpy.add().
                 algo_gener_errors_map[
-                    algo_name] += algo_error_map[algo_name] / self.steps
+                    algo_name] += np.asarray(algo_error_map[algo_name]) / self.steps
 
         for algo_name in algo_gener_errors_map:  # plot
             plt.plot(algo_gener_errors_map[algo_name], label=algo_name)

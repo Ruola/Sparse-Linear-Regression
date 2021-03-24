@@ -62,7 +62,7 @@ class ChangeConditionNumber:
         algos_map = dict()
         for algo_name in self.iterative_threshold_methods:
             _, best_lambda, gener_error = IterativeThresholdMethods(
-            ).get_errors_by_cv(self.x_original, y, H, self.num_iter,
+            ).get_errors_by_cv(self.x_original, y, H, constants.N_ITERATION,
                                self.SIGMA_half, algo_name, False)
             # To add {algo_name: {kappa, final_error}} key-value-pair to algos_map.
             algos_map = self._update_algos_map(algos_map, algo_name, kappa,

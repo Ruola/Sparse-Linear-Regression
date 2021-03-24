@@ -2,6 +2,7 @@ import math
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 12})
 import numpy as np
 import os
 
@@ -70,7 +71,7 @@ class CompareIterativeThresholdMethods:
                                                 algo_name)
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/ista iht/error by threshold " + self.design)
+            "/figures/ista iht/error by threshold " + self.design + ".pdf")
         plt.clf()
 
 
@@ -109,7 +110,7 @@ class CompareIterativeThresholdMethods:
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/ista iht/convergence rate of ISTA and IHT " + self.design)
+            "/figures/ista iht/convergence rate of ISTA and IHT " + self.design + ".pdf")
         plt.clf()
 
 

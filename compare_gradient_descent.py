@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 12})
 import multiprocessing as mp
 import numpy as np
 import os
@@ -64,7 +65,7 @@ class Compare:
                     map_of_thres_error, self.gd_type + " + " + self.thres_type)
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/second order methods/error by threshold " + self.design)
+            "/figures/second order methods/error by threshold " + self.design + ".pdf")
         plt.clf()
 
     def run_one_experiment(self, dummy):
@@ -142,17 +143,17 @@ class Compare:
         if constants.HTP_NAME in thres_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
-                "/figures/HTP/comparison in " + self.design + " design HTP")
+                "/figures/HTP/comparison in " + self.design + " design HTP.pdf")
         elif constants.FAST_NEWTON_NAME in self.gd_types:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/fast newton/comparison in " + self.design +
-                " design fast newton")
+                " design fast newton.pdf")
         else:
             plt.savefig(
                 os.path.dirname(os.path.abspath(__file__)) +
                 "/figures/second order methods/comparison in " + self.design +
-                " design")
+                " design.pdf")
         plt.clf()
 
 

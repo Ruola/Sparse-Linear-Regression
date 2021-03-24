@@ -135,6 +135,11 @@ class Compare:
 
         for algo_name in algo_gener_errors_map:  # plot
             plt.plot(algo_gener_errors_map[algo_name], label=algo_name)
+        # Store @param algo_gener_errors_map in a npy (binary) format.
+        with open(
+                os.path.dirname(os.path.abspath(__file__)) +
+                '/figures/HTP/result_dict_' + self.design + '.npy', 'wb') as f:
+            np.save(f, algo_gener_errors_map)
         plt.title("Second order methods comparison in " + self.design +
                   " design")
         plt.xlabel("#iterations")

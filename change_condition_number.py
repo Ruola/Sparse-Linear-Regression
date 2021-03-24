@@ -96,6 +96,11 @@ class ChangeConditionNumber:
                             algos_map, algo_name, kappa, error)
         for algo_name in algos_map:
             Draw().plot_using_a_map(algos_map[algo_name], algo_name)
+        # Store @param algos_map in a npy (binary) format.
+        with open(
+                os.path.dirname(os.path.abspath(__file__)) +
+                '/figures/condition number/result_dict.npy', 'wb') as f:
+            np.save(f, algos_map)
         plt.xlabel("condition number")
         plt.ylabel("generalization error")
         plt.title("Change condition number of design matrix x " +
@@ -103,7 +108,7 @@ class ChangeConditionNumber:
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/condition number/comparison by change of condition number.pdf"
+            "/figures/condition number/comparison by change of condition number x20.pdf"
         )
         plt.clf()
 
@@ -111,7 +116,7 @@ class ChangeConditionNumber:
 if __name__ == "__main__":
     """To change the true signal, modify x_value.
     """
-    x_value = 1.
+    x_value = 20.
     x = x_value * np.ones((constants.P))
     x[constants.S:] = 0
     x = np.random.permutation(x)

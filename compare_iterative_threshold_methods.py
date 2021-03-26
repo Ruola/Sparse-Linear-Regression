@@ -2,7 +2,9 @@ import math
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 12})
+plt.rcParams.update({'font.size': 16})
+plt.rcParams.update({'figure.figsize': [6.4, 5]})
+
 import numpy as np
 import os
 
@@ -106,7 +108,7 @@ class CompareIterativeThresholdMethods:
             print(algo_name, "error", gener_errors[-1])
         plt.xlabel("#iterations")
         plt.ylabel("generalization error")
-        plt.title("Compare convergence rate of ISTA and IHT " + self.design)
+        plt.title("Compare ISTA and IHT + " + self.design)
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +

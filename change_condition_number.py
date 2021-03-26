@@ -84,6 +84,10 @@ class ChangeConditionNumber:
         """
         algos_map = {}
         for _ in range(self.steps):  # Run several experiments
+            """Multiprocess.
+            If you want to cancel multiprocess, rewrite the line to be 
+            "pool = mp.Pool(1)".
+            """
             pool = mp.Pool(mp.cpu_count())
             pool_results = pool.map(self.run_one_experiment,
                                     np.arange(1, 101, 10), 1)

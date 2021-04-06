@@ -74,13 +74,11 @@ class ChangeSignal:
         for gd_type in self.gd_types:
             for iter_type in self.iter_types:
                 _, best_lambda, gener_error = GradientDescent(
-                    ).get_errors_by_cv(signal, y, H,
-                                                      self.num_iter,
-                                                      self.SIGMA_half, gd_type,
-                                                      iter_type, False)
+                ).get_errors_by_cv(signal, y, H, self.num_iter,
+                                   self.SIGMA_half, gd_type, iter_type, False)
                 algo_name = gd_type + "+" + iter_type
-                algos_map = self._update_algos_map(algos_map, algo_name,
-                                                   a, gener_error[-1])
+                algos_map = self._update_algos_map(algos_map, algo_name, a,
+                                                   gener_error[-1])
                 print(algo_name, best_lambda)
         return algos_map
 
@@ -89,7 +87,7 @@ class ChangeSignal:
         """
         algos_map = {}
         for _ in range(self.steps):  # Run several experiments
-            for a in [0.001, 0.005, 0.01, 0.05]:
+            for a in [0.001, 0.005, 0.01, 0.05, 0.1]:
                 map_result = self.run_one_experiment(a)
                 for algo_name in map_result:
                     for signal in map_result[algo_name]:
@@ -101,15 +99,17 @@ class ChangeSignal:
         # Store @param algos_map in a npy (binary) format.
         with open(
                 os.path.dirname(os.path.abspath(__file__)) +
-                '/figures/change signal/result_dict.npy', 'wb') as f:
+                "/figures/change signal/result_dict_kappa" +
+                str(int(self.kappa)) + ".npy", 'wb') as f:
             np.save(f, algos_map)
         plt.xlabel("signal a")
         plt.ylabel("exact recovery")
-        plt.title("Change signal with kappa " + str(self.kappa))
+        plt.title("Change signal with kappa " + str(int(self.kappa)))
         plt.legend()
         plt.savefig(
             os.path.dirname(os.path.abspath(__file__)) +
-            "/figures/change signal/comparison by change of signal.pdf")
+            "/figures/change signal/comparison by change of signal kappa" +
+            str(int(self.kappa)) + ".pdf")
         plt.clf()
 
 

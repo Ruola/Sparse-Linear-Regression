@@ -43,3 +43,7 @@ HTP_NAME = "AdaHTP"
 GD_NAME = "gd"
 NGD_NAME = "ngd"
 NEWTON_NAME = "newton"
+
+PREDICTION_ERROR_NAME = "prediction error"
+GENERALIZATION_ERROR_NAME = "generalization error"
+EXACT_RECOVERY_NAME = "exact recovery"

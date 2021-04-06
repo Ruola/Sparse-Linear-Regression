@@ -8,10 +8,16 @@ from utils.error import Error
 class GradientDescent:
     """Use gradient descent (gd), natural gd, newton or fast newton method with IHT/HTP to solve sparse linear regression.
     """
-    def __init__(self, fast_newton_num_gd=constants.FAST_NEWTON_NUM_GD):
-        """@param fast_newton_num_gd - the number of gradient descent iterations before thresholding in Fast Newton.
+    def __init__(self,
+                 fast_newton_num_gd=constants.FAST_NEWTON_NUM_GD,
+                 error_name=constants.GENERALIZATION_ERROR_NAME):
+        """Initialize.
+        
+        @param fast_newton_num_gd - the number of gradient descent iterations before thresholding in Fast Newton.
+        @param error_name - prediction, generalization, and so on.
         """
         self.fast_newton_num_gd = fast_newton_num_gd
+        self.error_name = error_name
 
     def get_gd_step_size(self, H, gd_type: str, inv_sigma):
         """Compute the step size of gradient descent.
@@ -68,9 +74,8 @@ class GradientDescent:
         if len(indices_removed) != len(x):
             # in case H'H is 0 * 0 dimension
             H_sparse = np.delete(np.copy(H), indices_removed, 1)
-            x_temp = np.dot(
-                pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
-                np.dot(np.transpose(H_sparse), y))
+            x_temp = np.dot(pinvh(np.dot(np.transpose(H_sparse), H_sparse)),
+                            np.dot(np.transpose(H_sparse), y))
             x_temp = x_temp.reshape(-1)
             x = self._insert_zero(x_temp, indices_removed)
         return x
@@ -139,7 +144,7 @@ class GradientDescent:
                 gener_errors - generalization errors of estimation in each iteration
         """
         x = np.zeros((constants.P))  # initial value of estimation
-        gener_errors = [
+        errors = [
             0
         ] * num_iter  # record generalization errors of estimation in each iteration
         inv_sigma = np.diag(1. / (np.diag(SIGMA_half)**2))
@@ -157,8 +162,8 @@ class GradientDescent:
             x = self.update_signal_estimation(x, y, H, lambda_step, gd_type, i,
                                               iter_type)
             if errors_needed:
-                gener_errors[i] = Error().get_gener_error(
-                    x_original, x, SIGMA_half)
+                errors[i] = Error().get_error(x_original, x, self.error_name,
+                                              SIGMA_half, y, H)
             # update threshold
             if not (gd_type == constants.FAST_NEWTON_NAME
                     and i % self.fast_newton_num_gd == 0):
@@ -166,7 +171,7 @@ class GradientDescent:
             if lambda_step < final_threshold:
                 lambda_step = final_threshold
         if errors_needed:
-            return (x, gener_errors)
+            return (x, errors)
         return x
 
     def get_errors_by_cv(self,

@@ -10,6 +10,13 @@ from utils.error import Error
 class IterativeThresholdMethods:
     """Implement iterative threshold algorithms (ISTA, AdaIHT) to solve sparse linear regression.
     """
+    def __init__(self, error_name = constants.GENERALIZATION_ERROR_NAME):
+        """Initialize.
+        
+        @param error_name - prediction, generalization, and so on.
+        """
+        self.error_name = error_name
+
     def run_soft_func(self, x, y, H, lambda_para, alpha):
         """Run soft threshold function and update estimation in an iteration.
         
@@ -85,7 +92,7 @@ class IterativeThresholdMethods:
         @param x_true - true signal
         @param iterative_method_type - "ISTA" or "AdaIHT"
         @return x - recovered signal; 
-            gener_errors- record errors of estimations of each iterations, 
+            errors- record errors of estimations of each iterations, 
             and the details of definition of the error are in Error class.
         """
         x = np.zeros((len(H[0])))
@@ -93,7 +100,7 @@ class IterativeThresholdMethods:
             lambda_step = np.max(alpha * np.dot(np.transpose(H), y - np.dot(H, x)))
         else:  #ISTA
             lambda_step = lambda_para
-        gener_errors = [0] * N_iter
+        errors = [0] * N_iter
         for i in range(N_iter):
             if iterative_method_type == constants.IHT_NAME:
                 x = self.run_hard_func(x, y, H, lambda_step, alpha)
@@ -102,8 +109,8 @@ class IterativeThresholdMethods:
                     lambda_step = lambda_para
             else:  #ISTA
                 x = self.run_soft_func(x, y, H, lambda_step, alpha)
-            gener_errors[i] = Error().get_gener_error(x_true, x, SIGMA_half)
-        return (x, gener_errors)
+            errors[i] = Error().get_error(x_true, x, self.error_name, SIGMA_half, y, H)
+        return (x, errors)
 
     def get_errors_by_cv(self,
                          x_original,

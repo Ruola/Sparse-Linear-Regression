@@ -17,8 +17,8 @@ ANISOTROPIC_NAME = "anisotropic"
 
 STEPS = 200  # number of experiments
 N_ITERATION = 600  # number of iterations in ISTA or Hard Threshold
-GD_STEPS = 20  # number of experiments in compare_gradient_descent
-GD_NUM_ITERATION = 200  # number of iterations in ISTA or Hard Threshold
+GD_STEPS = 20  # number of experiments in IHT HTP
+GD_NUM_ITERATION = 400  # number of iterations in IHT HTP
 FAST_NEWTON_NUM_GD = 10  # number of gradient descent steps in fast newton
 N, P, S = 200, 1000, 10
 # noise

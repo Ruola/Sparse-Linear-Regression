@@ -74,20 +74,23 @@ class ChangeSignal:
         for gd_type in self.gd_types:
             for iter_type in self.iter_types:
                 _, best_lambda, gener_error = GradientDescent(
-                ).get_errors_by_cv(signal, y, H, self.num_iter,
-                                   self.SIGMA_half, gd_type, iter_type, False)
+                    constants.FAST_NEWTON_NUM_GD,
+                    self.error_name).get_errors_by_cv(signal, y, H,
+                                                      self.num_iter,
+                                                      self.SIGMA_half, gd_type,
+                                                      iter_type, False)
                 algo_name = gd_type + "+" + iter_type
                 algos_map = self._update_algos_map(algos_map, algo_name, a,
                                                    gener_error[-1])
                 print(algo_name, best_lambda)
         return algos_map
 
-    def change_signal(self):
+    def change_signal(self, signal_range):
         """Run several experiments and get the change of exact recovery w.r.t. signal.
         """
         algos_map = {}
         for _ in range(self.steps):  # Run several experiments
-            for a in [0.001, 0.005, 0.01, 0.05, 0.1]:
+            for a in signal_range:
                 map_result = self.run_one_experiment(a)
                 for algo_name in map_result:
                     for signal in map_result[algo_name]:
@@ -117,4 +120,5 @@ if __name__ == "__main__":
     """To change the condition number, modify kappa.
     """
     kappa = 1.
-    ChangeSignal(kappa).change_signal()
+    signal_range = [0.001, 0.005, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15]
+    ChangeSignal(kappa).change_signal(signal_range)

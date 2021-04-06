@@ -22,7 +22,7 @@
   - `python3 change_condition_number.py`.
   - Results are in `/figures/condition number/`.
 - To get the change of exact recovery w.r.t. the signal.
-  - `python3 change_signal.py`.
+  - `python3 support_recovery.py`.
   - Results are in `/figures/change signal/`.
 
 ### Unit tests

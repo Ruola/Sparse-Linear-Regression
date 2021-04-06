@@ -43,8 +43,8 @@ class Error:
         @param x_hat - estimation of the signal.
         @return exact recovery
         """
-        x = np.where(x > 0, 1, 0)
-        x_hat = np.where(x_hat > 0, 1, 0)
+        x = np.where(x != 0, 1, 0)
+        x_hat = np.where(x_hat != 0, 1, 0)
         return np.linalg.norm(x - x_hat, 2)
 
     def get_error(self,

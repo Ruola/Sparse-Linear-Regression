@@ -1,5 +1,7 @@
 ## Sparse linear regression
 
+The details about algorithms and simulations are described in the thesis, [Improved computational and statistical guarantees for high dimensional linear regression](http://digitallibrary.usc.edu/cdm/ref/collection/p15799coll89/id/442220).
+
 ### How to use
 - `git clone https://github.com/Ruola/Sparse-Linear-Regression.git`
 - `cd Sparse-Linear-Regression`
